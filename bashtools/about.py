@@ -50,7 +50,7 @@ package_header = (
 
 copyright = Colors.LT2GRAY + """
     Copyright """ + copyright_range + """, Blake Huber.  This program distributed under
-    """ + LICENSE + """.  This copyright notice must remain with derivative works.""" + Colors.RESET + """
+    the """ + LICENSE + """ License. Copyright notice to remain with derivative works.""" + Colors.RESET + """
     __________________________________________________________________
         """ + Colors.RESET
 
