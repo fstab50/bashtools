@@ -15,13 +15,6 @@ Module Attributes:
         directory name default for stsaval config files (.stsaval)
     - config_path (TYPE str):
         default for stsaval config files, includes config_dir (~/.stsaval)
-    - key_deprecation (TYPE str):
-        Deprecation logic that bashtools uses when 2 keys exist for a user.
-
-        2 values possible:
-
-            - 'AGE':  bashtools deprecates based on age, replacing the oldest key
-            - 'AWSCLI':  bashtools replaces keys currently in the local awscli config
 """
 
 import os
@@ -39,9 +32,7 @@ logger.setLevel(logging.INFO)
 
 try:
 
-    env_info = get_os(detailed=True)
-    OS = env_info['os_type']
-    user_home = env_info['HOME']
+    user_home = os.environ['HOME']
 
 except KeyError as e:
     logger.critical(
