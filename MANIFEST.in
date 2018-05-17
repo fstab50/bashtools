@@ -1,0 +1,12 @@
+# include
+include README.md
+include DESCRIPTION.rst
+include LICENSE
+
+# exclude
+exclude .gitignore
+exclude .coverage
+exclude pytest.ini
+recursive-exclude .git *
+recursive-exclude *.egg-info *
+recursive-exclude tests *
