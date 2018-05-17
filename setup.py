@@ -67,7 +67,7 @@ class PostInstall(install):
 setup(
     name='bashtools',
     version=bashtools.__version__,
-    description='Automated IAM Access Key Rotation for Amazon Web Services',
+    description='Bash Tools for Amazon Web Services',
     long_description=read('DESCRIPTION.rst'),
     url='https://github.com/fstab50/bashtools',
     author=bashtools.__author__,
