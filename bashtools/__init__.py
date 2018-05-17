@@ -1,4 +1,4 @@
-from keyup._version import __version__ as version
+from bashtools._version import __version__ as version
 
 
 __author__ = 'Blake Huber'
