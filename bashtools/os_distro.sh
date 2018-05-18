@@ -3,7 +3,7 @@
 #
 #   Author:  		based on the original by zeldarealm@gmail.com
 #   Source:  		https://github.com/KittyKatt/screenFetch
-#	Instructions:	source function-library/os_distro.sh ; detectdistro
+#	Instructions:	source os_distro.sh; detectdistro
 #
 
 format="json"
@@ -223,7 +223,7 @@ detectdistro () {
 					[ -f /etc/oracle-release ] && distro_release="$(sed 's/Oracle Linux //' /etc/oracle-release)"
 					;;
 				"LinuxMint")
-					distro="Mint"
+					distro="LinuxMint"
 					if [[ "${distro_codename}" == "debian" ]]; then
 						distro="LMDE"
 						distro_codename="n/a"
@@ -650,7 +650,7 @@ detectdistro () {
 		mandrake) distro="Mandrake" ;;
 		mandriva) distro="Mandriva" ;;
 		mer) distro="Mer" ;;
-		mint|linux*mint) distro="Mint" ;;
+		mint|linux*mint) distro="LinuxMint" ;;
 		msys|msys2) distro="Msys" ;;
 		netbsd) distro="NetBSD" ;;
 		netrunner) distro="Netrunner" ;;
