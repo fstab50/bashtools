@@ -6,7 +6,6 @@ import subprocess
 
 
 class BadRCError(Exception):
-    print(Exception)
     pass
 
 
