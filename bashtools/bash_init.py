@@ -11,13 +11,13 @@ class BadRCError(Exception):
 
 
 def run_command(cmd):
-    """ No idea if this works """
-    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = p.communicate()
-    if p.returncode == 0:
+    """ No idea how th f to get this to work """
+    process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = process.communicate()
+    if process.returncode == 0:
         os.killpg(os.getpgid(pro.pid), signal.SIGTERM) 
     else:
-        raise BadRCError("Bad rc (%s) for cmd '%s': %s" % (p.returncode, cmd, stdout + stderr))
+        raise BadRCError("Bad rc (%s) for cmd '%s': %s" % (process.returncode, cmd, stdout + stderr))
     return stdout
 
 
@@ -66,8 +66,13 @@ with process.stdout:
     for line in iter(process.stdout.readline, b''):
         sys.stdout.write(line)
         sys.stdout.flush()
-    process.kill()      # DOES NOT WORK
-    os.killpg(os.getpgid(pro.pid), signal.SIGTERM)  # DOES NOT WORK
+    if process.returncode == 0:
+        os.killpg(os.getpgid(pro.pid), signal.SIGTERM) 
+        #process.kill()      # DOES NOT WORK
+    else:
+        raise BadRCError("Bad rc (%s) for cmd '%s': %s" % (p.returncode, cmd, stdout + stderr))
+
+
 
 
 
