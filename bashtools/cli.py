@@ -16,6 +16,7 @@ OS Support:
 
 Dependencies:
     - Installer tested under py3.5 and py3.6, may work under python2.7
+    - Requires bash v4+ 
 """
 
 import os
