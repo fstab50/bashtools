@@ -6,9 +6,9 @@ pkg_root="$(echo $pkg | awk -F '.' '{print $1}')"    # pkg without file extentio
 pkg_path=$(cd $(dirname $0); pwd -P)                 # location of pkg
 year=$(date +'%Y')
 PROFILE="$1"
-TYPE="$2"
-DBUGMODE="$2"                                       # "true" to produce output when exec from cli;
-                                                    # otherwise source this file
+OS_TYPE="$2"
+REGION="$3"                                         # optional
+
 
 declare -A LATEST
 
@@ -50,7 +50,7 @@ function array2json(){
 function get_regions(){
     local profile="$1"
     declare -a regions
-    regions="$(aws --profile $profile ec2 describe-regions --profile gcreds-da-atos | jq -r .Regions[].RegionName)"
+    regions="$(aws --profile $profile ec2 describe-regions --profile $PROFILE | jq -r .Regions[].RegionName)"
     echo "${regions[@]}"
 }
 
@@ -66,8 +66,11 @@ function amazonlinux(){
     elif [ ! $version ]; then
         version="1"
     fi
+
+    if [ $REGION ]; then regions=$REGION; else regions=$(get_regions $profile); fi
+
     # retrieve info from aws
-    for region in $(get_regions $profile); do
+    for region in $regions; do
         if [ "$version" = "1" ]; then
             ami=$(aws ec2 describe-images --profile $profile \
                 --owners amazon  \
@@ -104,8 +107,10 @@ function redhat(){
     elif [ ! $version ]; then
         version="7.?"     # provides latest; otherwise, request specific release with "7.4", "7.3" etc
     fi
+
+    if [ $REGION ]; then regions=$REGION; else regions=$(get_regions $profile); fi
     # retrieve info from aws
-    for region in $(get_regions $profile); do
+    for region in $regions; do
         #ami=$(aws --profile $profile ec2 describe-images --owners 309956199498 --query 'Images[*].[CreationDate,Name,ImageId]' --filters "Name=name,Values=RHEL-7.?*GA*" --region $region --output json)
         ami=$(aws ec2 describe-images \
             --owners 309956199498 \
@@ -123,13 +128,10 @@ function redhat(){
     return 0
 }
 
-if [ "$DBUGMODE" = "true" ] && [ "$TYPE" = "AML1" ]; then
-    echo -e "\nAmazon Linux v1 - Latest AMI\n"
-    amazonlinux $PROFILE "1"
-elif [ "$DBUGMODE" = "true" ] && [ "$TYPE" = "AML2" ]; then
-    echo -e "\nAmazon Linux v2 - Latest AMI\n"
-    amazonlinux $PROFILE "2"
-if [ "$DBUGMODE" = "true" ] && [ "$TYPE" = "redhat" ]; then
-    echo -e "\nRedhat Enterprise Linux - Latest AMI\n"
-    redhat $PROFILE "7.5"
+if [ "$OS_TYPE" = "AML1" ]; then
+    amazonlinux $PROFILE "1" $REGION
+elif [ "$OS_TYPE" = "AML2" ]; then
+    amazonlinux $PROFILE "2" $REGION
+elif [ "$OS_TYPE" = "redhat" ]; then
+    redhat $PROFILE "7.5" $REGION
 fi
