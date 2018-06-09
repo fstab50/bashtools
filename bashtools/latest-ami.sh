@@ -128,10 +128,14 @@ function redhat(){
     return 0
 }
 
-if [ "$OS_TYPE" = "AML1" ]; then
-    amazonlinux $PROFILE "1" $REGION
-elif [ "$OS_TYPE" = "AML2" ]; then
-    amazonlinux $PROFILE "2" $REGION
-elif [ "$OS_TYPE" = "redhat" ]; then
-    redhat $PROFILE "7.5" $REGION
-fi
+case "$OS_TYPE" in
+    "AML1" | "amazonlinux1" | "aml1" | "amazonlinux")
+        amazonlinux $PROFILE "1" $REGION
+        ;;
+    "AML2" | "amazonlinux2" | "aml2" | "amazonlinux2")
+        amazonlinux $PROFILE "2" $REGION
+        ;;
+    "redhat" | "RH" | "Redhat" | "rhel" | "RHEL")
+        redhat $PROFILE "7.5" $REGION
+        ;;
+esac
