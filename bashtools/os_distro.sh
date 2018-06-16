@@ -4,7 +4,7 @@
 #   Author:  		based on the original by zeldarealm@gmail.com
 #   Source:  		https://github.com/KittyKatt/screenFetch
 #	Instructions:	source function-library/os_distro.sh ; detectdistro
-#
+#	Version:		1.3
 
 verboseOut () {
 	if [[ "$verbosity" -eq "1" ]]; then
