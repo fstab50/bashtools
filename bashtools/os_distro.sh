@@ -3,10 +3,8 @@
 #
 #   Author:  		based on the original by zeldarealm@gmail.com
 #   Source:  		https://github.com/KittyKatt/screenFetch
-#	Instructions:	source os_distro.sh; detectdistro
+#	Instructions:	source function-library/os_distro.sh ; detectdistro
 #
-
-format="json"
 
 verboseOut () {
 	if [[ "$verbosity" -eq "1" ]]; then
@@ -24,6 +22,14 @@ stderrOut () {
 
 
 detectdistro () {
+	##
+	# 	determines:
+	#		- os family
+	#		- release (revision) number
+	#		- codename (informaal name)
+	##
+	local format="$1"       #  accepts "json" or '' (None)
+	#
 	if [[ -z "${distro}" ]]; then
 		distro="Unknown"
 		# LSB Release Check
@@ -223,7 +229,7 @@ detectdistro () {
 					[ -f /etc/oracle-release ] && distro_release="$(sed 's/Oracle Linux //' /etc/oracle-release)"
 					;;
 				"LinuxMint")
-					distro="LinuxMint"
+					distro="Mint"
 					if [[ "${distro_codename}" == "debian" ]]; then
 						distro="LMDE"
 						distro_codename="n/a"
@@ -599,7 +605,7 @@ detectdistro () {
 	case $distro in
 		aldos) distro="ALDOS";;
 		alpine) distro="Alpine Linux" ;;
-		amzn|amazon|amazon*linux) distro="Amazon Linux" ;;
+		amzn|amazon|amazon*linux) distro="AmazonLinux" ;;
 		antergos) distro="Antergos" ;;
 		arch*linux*old) distro="Arch Linux - Old" ;;
 		arch|arch*linux) distro="Arch Linux" ;;
@@ -650,7 +656,7 @@ detectdistro () {
 		mandrake) distro="Mandrake" ;;
 		mandriva) distro="Mandriva" ;;
 		mer) distro="Mer" ;;
-		mint|linux*mint) distro="LinuxMint" ;;
+		mint|linux*mint) distro="Mint" ;;
 		msys|msys2) distro="Msys" ;;
 		netbsd) distro="NetBSD" ;;
 		netrunner) distro="Netrunner" ;;
@@ -702,3 +708,6 @@ detectdistro () {
 		echo "${distro} ${distro_release} ${distro_codename}"
 	fi
 }
+
+# call main
+detectdistro
