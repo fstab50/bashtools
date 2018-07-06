@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.6"
+VERSION="2.6.1"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -146,9 +146,9 @@ function convert_time_months(){
         ((sec=num))
     fi
     if (( $mo > 0 )); then
-        echo "$mo"m,"$day"d
+        echo -e "$mo"m,"$day"d
     else
-        echo "$day"d,"$hour"h,"$min"m
+        echo -e "$day"d,"$hour"h,"$min"m
     fi
     #
     # <-- end function convert_time -->
@@ -288,7 +288,7 @@ function linux_distro(){
     export OS_DISTRO="$os_major"
     std_logger "Operating system identified as Major Version: $os_major, Minor Version: $os_release" "INFO" $LOG_FILE
     # return major, minor disto versions
-    echo "$os_major $os_release $os_codename"
+    echo -e "$os_major $os_release $os_codename"
 }
 
 
@@ -345,11 +345,11 @@ function std_logger(){
         # create log file
         touch $log_file
         if [ ! -f $log_file ]; then
-            echo "[$prefix]: $pkg ($VERSION): failure to call std_logger, $log_file location not writeable"
+            echo -e "[$prefix]: $pkg ($VERSION): failure to call std_logger, $log_file location not writeable"
             exit $E_DIR
         fi
     else
-        echo "$(date +'%Y-%m-%d %T') $host - $pkg - $VERSION - [$prefix]: $msg" >> "$log_file"
+        echo -e "$(date +'%Y-%m-%d %T') $host - $pkg - $VERSION - [$prefix]: $msg" >> "$log_file"
     fi
 }
 
