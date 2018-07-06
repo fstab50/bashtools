@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.5.3"
+VERSION="2.6"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -406,4 +406,32 @@ function std_error_exit(){
     local status="$2"
     std_error "$msg"
     exit $status
+}
+
+function timer()
+    ## measure total execution runtime ##
+    #
+    # --------- USAGE -------------
+    #
+    #       @ beginning:
+    #       START=$(timer)
+    #
+    #       @ end time:
+    #       printf 'Total runtime: %s\n' $(timer $START)
+    #
+{
+    if [[ $# -eq 0 ]]; then
+        echo $(date '+%s')
+    else
+        local  stime=$1
+        etime=$(date '+%s')
+
+        if [[ -z "$stime" ]]; then stime=$etime; fi
+
+        dt=$((etime - stime))
+        ds=$((dt % 60))
+        dm=$(((dt / 60) % 60))
+        dh=$((dt / 3600))
+        printf '%d:%02d:%02d' $dh $dm $ds
+    fi
 }
