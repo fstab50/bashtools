@@ -4,7 +4,7 @@
 #   Author:  		based on the original by zeldarealm@gmail.com
 #   Source:  		https://github.com/KittyKatt/screenFetch
 #	Instructions:	source function-library/os_distro.sh ; detectdistro
-#	Version:		1.3
+#	Version:		1.4
 
 verboseOut () {
 	if [[ "$verbosity" -eq "1" ]]; then
@@ -605,7 +605,14 @@ detectdistro () {
 	case $distro in
 		aldos) distro="ALDOS";;
 		alpine) distro="Alpine Linux" ;;
-		amzn|amazon|amazon*linux) distro="AmazonLinux" ;;
+		amzn|amazon|amazon*linux)
+			distro="AmazonLinux"
+			if [ "$(grep VERSION_ID /etc/os-release | awk -F '=' '{print $2}')" = '"2"' ]; then
+				distro_release="2"
+			elif [ "$(grep VERSION_ID /etc/os-release | awk -F '=' '{print $2}')" = '"1"' ]; then
+				distro_release="1"
+			else distro_release="unknown"; fi
+			;;
 		antergos) distro="Antergos" ;;
 		arch*linux*old) distro="Arch Linux - Old" ;;
 		arch|arch*linux) distro="Arch Linux" ;;
