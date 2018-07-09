@@ -4,7 +4,7 @@
 #   Author:  		based on the original by zeldarealm@gmail.com
 #   Source:  		https://github.com/KittyKatt/screenFetch
 #	Instructions:	source function-library/os_distro.sh ; detectdistro
-#	Version:		1.4
+#	Version:		1.4.2
 
 verboseOut () {
 	if [[ "$verbosity" -eq "1" ]]; then
@@ -18,6 +18,22 @@ errorOut () {
 
 stderrOut () {
 	while IFS='' read -r line; do printf "\033[1;37m[[ \033[1;31m! \033[1;37m]] \033[0m${line}\n"; done
+}
+
+
+function amazonlinux_minor_version(){
+	##
+	#  determines minor version internally from
+	#  within an amazonlinux host os environment
+	#
+	local image_id
+	local region
+	#
+	curl -O 'http://169.254.169.254/latest/dynamic/instance-identity/document'
+	image_id="$(jq -r .imageId document)"
+	region="$(jq -r .region document)"
+	aws ec2 describe-images --image-ids $image_id --region $region > images.json
+	printf -- "%s\n" "$(jq -r .Images[0].Name images.json | awk -F '-' '{print $1}')"
 }
 
 
@@ -609,9 +625,11 @@ detectdistro () {
 			distro="AmazonLinux"
 			if [ "$(grep VERSION_ID /etc/os-release | awk -F '=' '{print $2}')" = '"2"' ]; then
 				distro_release="2"
-			elif [ "$(grep VERSION_ID /etc/os-release | awk -F '=' '{print $2}')" = '"1"' ]; then
+			elif [ "${amazonlinux_minor_version}" != "2" ]; then
 				distro_release="1"
-			else distro_release="unknown"; fi
+			else
+				distro_release="unknown"
+			fi
 			;;
 		antergos) distro="Antergos" ;;
 		arch*linux*old) distro="Arch Linux - Old" ;;
