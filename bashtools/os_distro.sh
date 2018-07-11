@@ -320,7 +320,7 @@ detectdistro () {
 					distro_codename=null
 					;;
 				"rhel")
-					distro="Red Hat Enterprise Linux"
+					distro="Redhat"
 					distro_release="$(redhat_release_version)"
 					distro_codename="$(redhat_codename_version)"
 					;;
@@ -361,7 +361,7 @@ detectdistro () {
 					;;
 			esac
 			if [[ "${distro_detect}" =~ "RedHatEnterprise" ]]; then
-				distro="Red Hat Enterprise Linux"
+				distro="Redhat"
 				distro_release="$(redhat_release_version)"
 				distro_codename="$(redhat_codename_version)"
 			fi
@@ -455,7 +455,7 @@ detectdistro () {
 					if [[ "${distro}" == "Oracle Linux" ]] && [ -f /etc/oracle-release ]; then
 						distro_more="$(sed 's/Oracle Linux //' /etc/oracle-release)"
 					fi
-					[[ "${distro}" == "rhel" ]] && distro="Red Hat Enterprise Linux"
+					[[ "${distro}" == "rhel" ]] && distro="Redhat"
 					[[ "${distro}" == "Neon" ]] && distro="KDE neon"
 					[[ "${distro}" == "SLED" || "${distro}" == "sled" || "${distro}" == "SLES" || "${distro}" == "sles" ]] && distro="SUSE Linux Enterprise"
 					if [[ "${distro}" == "SUSE Linux Enterprise" ]] && [ -f /etc/os-release ]; then
@@ -745,7 +745,7 @@ detectdistro () {
 		qubes) distro="Qubes OS" ;;
 		raspbian) distro="Raspbian" ;;
 		red*hat*|rhel)
-			distro="Red Hat Enterprise Linux"
+			distro="Redhat"
 			distro_release="$(redhat_release_version)"
 			distro_codename="$(redhat_codename_version)"
 			;;
