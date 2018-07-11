@@ -21,10 +21,13 @@ stderrOut () {
 }
 
 
-function amazonlinux_minor_version(){
+function amazonlinux_release_version(){
 	#
-	#  determines minor version internally from
-	#  within an amazonlinux host os environment
+	#  determines release version internally from  within an
+	#  amazonlinux host os environment.
+	#
+	#  Requires identification of AmazonLinux OS Family as a
+	#  prerequisite
 	#
 	local image_id
 	local region
@@ -39,6 +42,35 @@ function amazonlinux_minor_version(){
 	printf -- "%s\n" "$(jq -r .Images[0].Name $tmp/images.json | awk -F '-' '{print $1}')"
 	rm $tmp/document $tmp/images.json
 	cd $cwd
+}
+
+
+function redhat_release_version(){
+	#
+	#  determines Redhat release version internally from
+	#  within a Redhat host os environment.
+	#
+	#  Requires identification of Redhat Linux OS Family
+	#  as a prerequisite
+	#
+	local release
+	#
+	release="$(grep VERSION_ID /etc/os-release | awk -F '=' '{print $2}')"
+	printf -- "%s\n" $(echo $release | cut -c 2-50 | rev | cut -c 2-50 | rev)
+}
+
+
+function redhat_codename_version(){
+	#
+	#  determines Redhat codename internally from
+	#  within a Redhat host os environment.
+	#
+	#  Requires identification of Redhat Linux OS Family
+	#  as a prerequisite
+	#
+	local codename
+	codename="$(grep VERSION /etc/os-release | head -n 1 | awk -F '(' '{print $2}' | awk -F ')' '{print $1}')"
+	printf -- "%s\n" $codename
 }
 
 
@@ -289,6 +321,8 @@ detectdistro () {
 					;;
 				"rhel")
 					distro="Red Hat Enterprise Linux"
+					distro_release="$(redhat_release_version)"
+					distro_codename="$(redhat_codename_version)"
 					;;
 				"RosaDesktopFresh")
 					distro="ROSA"
@@ -326,7 +360,11 @@ detectdistro () {
 					fi
 					;;
 			esac
-			if [[ "${distro_detect}" =~ "RedHatEnterprise" ]]; then distro="Red Hat Enterprise Linux"; fi
+			if [[ "${distro_detect}" =~ "RedHatEnterprise" ]]; then
+				distro="Red Hat Enterprise Linux"
+				distro_release="$(redhat_release_version)"
+				distro_codename="$(redhat_codename_version)"
+			fi
 			if [[ "${distro_detect}" =~ "SUSELinuxEnterprise" ]]; then distro="SUSE Linux Enterprise"; fi
 			if [[ -n ${distro_release} && ${distro_release} != "n/a" ]]; then distro_more="$distro_release"; fi
 			if [[ -n ${distro_codename} && ${distro_codename} != "n/a" ]]; then distro_more="$distro_more $distro_codename"; fi
@@ -494,6 +532,8 @@ detectdistro () {
 							distro="Red Star OS"
 							distro_more=$(grep -o '[0-9.]' /etc/redhat-release | tr -d '\n')
 						fi
+						distro_release="$(redhat_release_version)"
+						distro_codename="$(redhat_codename_version)"
 					fi
 			fi
 
@@ -630,7 +670,7 @@ detectdistro () {
 			distro="AmazonLinux"
 			if [ "$(grep VERSION_ID /etc/os-release | awk -F '=' '{print $2}')" = '"2"' ]; then
 				distro_release="2"
-			elif [ "${amazonlinux_minor_version}" != "2" ]; then
+			elif [ "${amazonlinux_release_version}" != "2" ]; then
 				distro_release="1"
 			else
 				distro_release="unknown"
@@ -704,7 +744,11 @@ detectdistro () {
 		proxmox|proxmox*ve) distro="Proxmox VE" ;;
 		qubes) distro="Qubes OS" ;;
 		raspbian) distro="Raspbian" ;;
-		red*hat*|rhel) distro="Red Hat Enterprise Linux" ;;
+		red*hat*|rhel)
+			distro="Red Hat Enterprise Linux"
+			distro_release="$(redhat_release_version)"
+			distro_codename="$(redhat_codename_version)"
+			;;
 		rosa) distro="ROSA" ;;
 		red*star|red*star*os) distro="Red Star OS" ;;
 		sabayon) distro="Sabayon" ;;
