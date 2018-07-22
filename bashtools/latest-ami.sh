@@ -128,6 +128,19 @@ function redhat(){
     return 0
 }
 
+function ubuntu(){
+    # returns all ubuntu images
+    # aws ec2 describe-images --owner
+    aws ec2 describe-images \
+        --owners 099720109477 \
+        --region $region \
+        --profile $profile \
+        --filters "Name=name,Values=*$version*" \
+        --query 'sort_by(Images, &CreationDate) | [-1].ImageId'
+
+
+}
+
 case "$OS_TYPE" in
     "AML1" | "amazonlinux1" | "aml1" | "amazonlinux")
         amazonlinux $PROFILE "1" $REGION
