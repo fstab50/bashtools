@@ -683,7 +683,11 @@ detectdistro () {
 		blackpantheros|black*panther*) distro="blackPanther OS" ;;
 		blag) distro="BLAG" ;;
 		bunsenlabs) distro="BunsenLabs" ;;
-		centos) distro="CentOS" ;;
+		centos)
+			distro="CentOS"
+			distro_release="$(redhat_release_version)"
+			distro_codename="$(redhat_codename_version)"
+			;;
 		chakra) distro="Chakra" ;;
 		chapeau) distro="Chapeau" ;;
 		chrome*|chromium*) distro="Chrome OS" ;;
