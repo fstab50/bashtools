@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.6.1"
+VERSION="2.6.2"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -378,6 +378,8 @@ function std_message(){
     fi
     if [ $format ]; then
         echo -e "${yellow}[ $cyan$pref$yellow ]$reset  $msg" | indent04
+    elif [ "$prefix" = "OK" ] || [ "$prefix" = "ok" ]; then
+        echo -e "\n${yellow}[ $green${BOLD}$pref$yellow ]$reset  $msg\n" | indent04
     else
         echo -e "\n${yellow}[ $cyan$pref$yellow ]$reset  $msg\n" | indent04
     fi
