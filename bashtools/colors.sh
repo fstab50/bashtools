@@ -18,11 +18,13 @@
 #       Reset: \u001b[0m
 #------------------------------------------------------------------------------
 
-VERSION="1.8"
+VERSION="1.8.2"
 
 
 # Formatting
 blue=$(tput setaf 4)
+medblue='\033[38;5;95;38;5;27m'                 # medium dark blue
+darkblue='\033[38;5;95;38;5;21m'                # very dark blue; best when bold
 cyan=$(tput setaf 6)
 green=$(tput setaf 2)
 purple=$(tput setaf 5)
