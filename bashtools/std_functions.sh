@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.6.2"
+VERSION="2.7.0"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -80,6 +80,21 @@ function authenticated(){
     else
         return 0
     fi
+}
+
+function binary_depcheck(){
+    ## validate binary dependencies installed
+    local check_list=( "$@" )
+    local msg
+    #
+    for prog in "${check_list[@]}"; do
+        if ! type "$prog" > /dev/null 2>&1; then
+            msg="$prog is required and not found in the PATH. Aborting (code $E_DEPENDENCY)"
+            std_error_exit "$msg" $E_DEPENDENCY
+        fi
+    done
+    #
+    # <<-- end function binary_depcheck -->>
 }
 
 
@@ -330,6 +345,46 @@ function print_separator(){
     printf "%-10s %*s" $(echo -e ${frame}) "$(($width - 1))" '' | tr ' ' _ | indent02
     echo -e "${bodytext}\n"
 
+}
+
+
+function python_version_depcheck(){
+    ## dependency check for a specific version of python binary ##
+    local version
+    local version_min="$1"
+    local version_max="$2"
+    local msg
+    #
+    local_bin=$(which python3)
+    # determine binary version
+    version=$($local_bin 2>&1 --version | awk '{print $2}' | cut -c 1-3)
+    #
+    if (( $(echo "$version > $version_max" | bc -l) )) || \
+       (( $(echo "$version < $version_min" | bc -l) ))
+    then
+        msg="python version $version detected - must be > $version_min, but < $version_max"
+        std_error_exit "$msg" $E_DEPENDENCY
+    fi
+    #
+    # <<-- end function python_depcheck -->>
+}
+
+
+function python_module_depcheck(){
+    ## validate python library dependencies
+    local check_list=( "$@" )
+    local msg
+    #
+    for module in "${check_list[@]}"; do
+        exitcode=$(python3 -c "import $module" > /dev/null 2>&1; echo $?)
+        if [[ $exitcode == "1" ]]; then
+            # module not imported, not found
+            msg="$module is a required python library. Aborting (code $E_DEPENDENCY)"
+            std_error_exit "$msg" $E_DEPENDENCY
+        fi
+    done
+    #
+    # <<-- end function python_module_depcheck -->>
 }
 
 
