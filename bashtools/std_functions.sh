@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.7.1"
+VERSION="2.7.2"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -255,7 +255,21 @@ function is_installed(){
 function is_float(){
     ## see is_number for int type checking ##
     local num="$1"
-    local regex='^[0-9]+([.][0-9]+)?$'
+    local regex='^[0-9]+[.][0-9]+?$'
+    #
+    if [[ $num =~ $regex ]] ; then
+        # int or float
+        return 0
+    fi
+    # not a number
+    return 1
+}
+
+
+function is_int(){
+    ## see is_float for decimal type checking ##
+    local num="$1"
+    local regex='^[0-9]+$'
     #
     if [[ $num =~ $regex ]] ; then
         # int or float
@@ -267,9 +281,9 @@ function is_float(){
 
 
 function is_number(){
-    ## see is_float for decimal type checking ##
+    ## type checking; any, int or decimal type ##
     local num="$1"
-    local regex='^[0-9]+$'
+    local regex='^[0-9]+([.][0-9]+)?$'
     #
     if [[ $num =~ $regex ]] ; then
         # int or float
