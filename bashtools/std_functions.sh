@@ -469,23 +469,36 @@ function std_message(){
     local log_file="$3"
     local format="$4"
     #
-    if [ $log_file ]; then
+    if [ $log_file ] && { [ "$prefix" = "ok" ] || [ "$prefix" = "OK" ]; }; then
+        # ensure info log message written to log
+        std_logger "$msg" "INFO" "$log_file"
+
+    elif [ $log_file ]; then
         std_logger "$msg" "$prefix" "$log_file"
     fi
+
     [[ $QUIET ]] && return
     shift
     pref="----"
+
     if [[ $1 ]]; then
         pref="${1:0:5}"
         shift
     fi
+
     # output
     if [ $format ]; then
+
         echo -e "${yellow}[ $cyan$pref$yellow ]$reset  $msg" | indent04
+
     elif [ "$prefix" = "OK" ] || [ "$prefix" = "ok" ]; then
+
         echo -e "\n${yellow}[ $green${BOLD}$pref$yellow ]$reset  $msg\n" | indent04
+
     else
+
         echo -e "\n${yellow}[ $cyan$pref$yellow ]$reset  $msg\n" | indent04
+
     fi
     #
     # <<-- end function std_message -->>
@@ -540,8 +553,11 @@ function timer(){
     #       @ end time:
     #       printf 'Total runtime: %s\n' $(timer $START)
     #
+    #
     if [[ $# -eq 0 ]]; then
+
         echo $(date '+%s')
+
     else
         local  stime=$1
         etime=$(date '+%s')
@@ -553,6 +569,7 @@ function timer(){
         dm=$(((dt / 60) % 60))
         dh=$((dt / 3600))
         printf '%d:%02d:%02d' $dh $dm $ds
+
     fi
     #
     # <<-- end function timer -->>
