@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.7.4"
+VERSION="2.7.5"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -244,77 +244,112 @@ function environment_info(){
 
 
 function is_installed(){
+    ##
     ## validate if binary previously installed  ##
+    ##
     local binary="$1"
     local location=$(which $binary 2>/dev/null)
+
     if [ $location ]; then
+
         std_message "$binary is installed:  $location" "INFO" $LOG_FILE
         return 0
+
     else
+
         return 1
+
     fi
+    #
+    #<-- end function is_installed -->
 }
 
 
 function is_float(){
-    ## see is_number for int type checking ##
+    ##
+    ## Checks type for floating point number
+    ## see is_number integer type checking
+    ##
     local num="$1"
     local regex='^[0-9]+[.][0-9]+?$'
-    #
+
     if [[ $num =~ $regex ]] ; then
+
         # int or float
         return 0
+
     fi
-    # not a number
-    return 1
+
+    return 1        # not a floating point number
+    #
+    #<-- end function is_float -->
 }
 
 
 function is_int(){
+    ##
     ## see is_float for decimal type checking ##
+    ##
     local num="$1"
     local regex='^[0-9]+$'
-    #
+
     if [[ $num =~ $regex ]] ; then
+
         # int or float
         return 0
+
     fi
-    # not a number
-    return 1
+
+    return 1        # not an integer
+    #
+    #<-- end function is_int -->
 }
 
 
 function is_number(){
+    ##
     ## type checking; any, int or decimal type ##
+    ##
     local num="$1"
     local regex='^[0-9]+([.][0-9]+)?$'
-    #
+
     if [[ $num =~ $regex ]] ; then
+
         # int or float
         return 0
+
     fi
-    # not a number
-    return 1
+
+    return 1        # not a number (is alpha character)
+    #
+    #<-- end function is_number -->
 }
 
 
 function linux_distro(){
+    ##
     ## determine linux os distribution ##
+    ##
     local os_major
     local os_release
     local os_codename
     declare -a distro_info
 
     if [ "$(which lsb_release)" ]; then
+
         distro_info=( $(lsb_release -sirc) )
+
         if [[ ${#distro_detect[@]} -eq 3 ]]; then
             os_major=${distro_info[0]}
             os_release=${distro_info[1]}
             os_codename=${distro_info[2]}
         fi
+
     else
+
         ## AMAZON Linux ##
         if [ "$(grep -i amazon /etc/os-release  | head -n 1)" ]; then
+
             os_major="amazonlinux"
             if [ "$(grep VERSION_ID /etc/os-release | awk -F '=' '{print $2}')" = '"2"' ]; then
                 os_release="$(grep VERSION /etc/os-release | grep -v VERSION_ID | awk -F '=' '{print $2}')"
@@ -326,11 +361,13 @@ function linux_distro(){
 
         ## REDHAT Linux ##
         elif [ $(grep -i redhat /etc/os-release  | head -n 1) ]; then
+
             os_major="redhat"
             os_release="future"
 
         ## UBUNTU, ubuntu variants ##
         elif [ "$(grep -i ubuntu /etc/os-release)" ]; then
+
             os_major="ubuntu"
             if [ "$(grep -i mint /etc/os-release | head -n1)" ]; then
                 os_release="linuxmint"
@@ -341,19 +378,28 @@ function linux_distro(){
 
         ## distribution not determined ##
         else
+
             os_major="unknown"; os_release="unknown"
+
         fi
+
     fi
+
     # set distribution type in environment
     export OS_DISTRO="$os_major"
     std_logger "Operating system identified as Major Version: $os_major, Minor Version: $os_release" "INFO" $LOG_FILE
+
     # return major, minor disto versions
     echo -e "$os_major $os_release $os_codename"
+    #
+    # <<--- end function linux_distro -->>
 }
 
 
 function print_header(){
+    ##
     ## print formatted report header ##
+    ##
     local title="$1"
     local width="$2"
     local reportfile="$3"
@@ -368,49 +414,62 @@ function print_header(){
     echo -e "${frame}" >> $reportfile
     printf '%*s' "$width" '' | tr ' ' _  | indent02 >> $reportfile
     echo -e "${bodytext}" >> $reportfile
+    #
+    # <<--- end function print_header -->>
 }
 
 
 function print_footer(){
+    ##
     ## print formatted report footer ##
+    ##
     local footer="$1"
     local width="$2"
-    #
+
     printf "%-10s %*s\n" $(echo -e ${frame}) "$(($width - 1))" '' | tr ' ' _ | indent02
     echo -e "${bodytext}"
     echo -ne $footer | indent20
     echo -e "${frame}"
     printf '%*s\n' "$width" '' | tr ' ' _ | indent02
     echo -e "${bodytext}"
+    #
+    # <<--- end function print_footer -->>
 }
 
 
 function print_separator(){
+    ##
     ## prints single bar separator of width ##
+    ##
+
     local width="$1"
+
     echo -e "${frame}"
     printf "%-10s %*s" $(echo -e ${frame}) "$(($width - 1))" '' | tr ' ' _ | indent02
     echo -e "${bodytext}\n"
-
+    #
+    # <<--- end function linux_distro -->>
 }
 
 
 function python_version_depcheck(){
+    ##
     ## dependency check for a specific version of python binary ##
+    ##
     local version
     local version_min="$1"
     local version_max="$2"
     local msg
-    #
+
     local_bin=$(which python3)
     # determine binary version
     version=$($local_bin 2>&1 --version | awk '{print $2}' | cut -c 1-3)
-    #
-    if (( $(echo "$version > $version_max" | bc -l) )) || \
-       (( $(echo "$version < $version_min" | bc -l) ))
-    then
+
+    if (( $(echo "$version > $version_max" | bc -l) )) || (( $(echo "$version < $version_min" | bc -l) )); then
+
         msg="python version $version detected - must be > $version_min, but < $version_max"
         std_error_exit "$msg" $E_DEPENDENCY
+
     fi
     #
     # <<-- end function python_depcheck -->>
@@ -418,17 +477,22 @@ function python_version_depcheck(){
 
 
 function python_module_depcheck(){
+    ##
     ## validate python library dependencies
+    ##
     local check_list=( "$@" )
     local msg
-    #
+
     for module in "${check_list[@]}"; do
+
         exitcode=$(python3 -c "import $module" > /dev/null 2>&1; echo $?)
+
         if [[ $exitcode == "1" ]]; then
             # module not imported, not found
             msg="$module is a required python library. Aborting (code $E_DEPENDENCY)"
             std_error_exit "$msg" $E_DEPENDENCY
         fi
+
     done
     #
     # <<-- end function python_module_depcheck -->>
@@ -453,28 +517,33 @@ function std_logger(){
     else
         echo -e "$(date +'%Y-%m-%d %T') $host - $pkg - $VERSION - [$prefix]: $msg" >> "$log_file"
     fi
+    #
+    # <<--- end function std_logger -->>
 }
 
 
 function std_message(){
-    #
-    # Caller formats:
-    #
-    #   Logging to File | std_message "xyz message" "INFO" "/pathto/log_file"
-    #
-    #   No Logging  | std_message "xyz message" "INFO"
-    #
+    ##
+    ## Caller formats:
+    ##
+    ##   Logging to File | std_message "xyz message" "INFO" "/pathto/log_file"
+    ##
+    ##   No Logging  | std_message "xyz message" "INFO"
+    ##
     local msg="$1"
     local prefix="$2"
     local log_file="$3"
     local format="$4"
-    #
+
     if [ $log_file ] && { [ "$prefix" = "ok" ] || [ "$prefix" = "OK" ]; }; then
+
         # ensure info log message written to log
         std_logger "$msg" "INFO" "$log_file"
 
     elif [ $log_file ]; then
+
         std_logger "$msg" "$prefix" "$log_file"
+
     fi
 
     [[ $QUIET ]] && return
@@ -533,6 +602,9 @@ function std_warn(){
 
 
 function std_error_exit(){
+    ##
+    ##  standard function presents error msg, automatically
+    ##  exits error code
     local msg="$1"
     local status="$2"
     std_error "$msg"
