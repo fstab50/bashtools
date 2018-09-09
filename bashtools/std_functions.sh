@@ -24,12 +24,13 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.7.3"
+VERSION="2.7.4"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
     exit
 fi
+
 
 function array2json(){
     ## converts associative array to single-level (no nested keys) json file output ##
@@ -62,6 +63,7 @@ function array2json(){
     # <-- end function array2json -->
 }
 
+
 function authenticated(){
     ## validates authentication using iam user or role ##
     local profilename="$1"
@@ -81,6 +83,7 @@ function authenticated(){
         return 0
     fi
 }
+
 
 function binary_depcheck(){
     ## validate binary dependencies installed
@@ -127,6 +130,7 @@ function convert_time(){
     # <-- end function convert_time -->
     #
 }
+
 
 function convert_time_months(){
     # time format conversion (http://stackoverflow.com/users/1030675/choroba)
@@ -366,6 +370,7 @@ function print_header(){
     echo -e "${bodytext}" >> $reportfile
 }
 
+
 function print_footer(){
     ## print formatted report footer ##
     local footer="$1"
@@ -378,6 +383,7 @@ function print_footer(){
     printf '%*s\n' "$width" '' | tr ' ' _ | indent02
     echo -e "${bodytext}"
 }
+
 
 function print_separator(){
     ## prints single bar separator of width ##
@@ -449,6 +455,7 @@ function std_logger(){
     fi
 }
 
+
 function std_message(){
     #
     # Caller formats:
@@ -480,13 +487,19 @@ function std_message(){
     else
         echo -e "\n${yellow}[ $cyan$pref$yellow ]$reset  $msg\n" | indent04
     fi
+    #
+    # <<-- end function std_message -->>
 }
+
 
 function std_error(){
     local msg="$1"
     std_logger "$msg" "ERROR" $LOG_FILE
     echo -e "\n${yellow}[ ${red}ERROR${yellow} ]$reset  $msg\n" | indent04
+    #
+    # <<-- end function std_error -->>
 }
+
 
 function std_warn(){
     local msg="$1"
@@ -501,16 +514,22 @@ function std_warn(){
         # msg is only 1 line sent by the caller
         echo -e "\n${yellow}[ ${byl}WARN${yellow} ]$reset  $msg\n" | indent04
     fi
+    #
+    # <<-- end function std_warn -->>
 }
+
 
 function std_error_exit(){
     local msg="$1"
     local status="$2"
     std_error "$msg"
     exit $status
+    #
+    # <<-- end function std_warn -->>
 }
 
-function timer()
+
+function timer(){
     ## measure total execution runtime ##
     #
     # --------- USAGE -------------
@@ -521,7 +540,6 @@ function timer()
     #       @ end time:
     #       printf 'Total runtime: %s\n' $(timer $START)
     #
-{
     if [[ $# -eq 0 ]]; then
         echo $(date '+%s')
     else
@@ -536,4 +554,6 @@ function timer()
         dh=$((dt / 3600))
         printf '%d:%02d:%02d' $dh $dm $ds
     fi
+    #
+    # <<-- end function timer -->>
 }
