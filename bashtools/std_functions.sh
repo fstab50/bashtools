@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.7.2"
+VERSION="2.7.3"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -472,6 +472,7 @@ function std_message(){
         pref="${1:0:5}"
         shift
     fi
+    # output
     if [ $format ]; then
         echo -e "${yellow}[ $cyan$pref$yellow ]$reset  $msg" | indent04
     elif [ "$prefix" = "OK" ] || [ "$prefix" = "ok" ]; then
@@ -489,13 +490,16 @@ function std_error(){
 
 function std_warn(){
     local msg="$1"
+    local byl="$(echo -e ${brightyellow2})"
+
     std_logger "$msg" "WARN" $LOG_FILE
+
     if [ "$3" ]; then
         # there is a second line of the msg, to be printed by the caller
-        echo -e "\n${yellow}[ ${red}WARN${yellow} ]$reset  $msg" | indent04
+        echo -e "\n${yellow}[ ${byl}WARN${yellow} ]$reset  $msg" | indent04
     else
         # msg is only 1 line sent by the caller
-        echo -e "\n${yellow}[ ${red}WARN${yellow} ]$reset  $msg\n" | indent04
+        echo -e "\n${yellow}[ ${byl}WARN${yellow} ]$reset  $msg\n" | indent04
     fi
 }
 
