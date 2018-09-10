@@ -510,13 +510,13 @@ function std_logger(){
     ##      - msg:      body of the log message text
     ##      - prefix:   INFO, DEBUG, etc. Note: WARN is handled by std_warn function
     ##      - log_file: The file to which log messages should be written
-    ##      - version:  Populated by global var __version__ inherited from the calling
-    ##                  program which sources std_functions.sh (this module)
+    ##      - version:  Populated if version module exists in pkg_lib. __version__ sourced
+    ##                  from within the version module
     ##
     local msg="$1"
     local prefix="$2"
     local log_file="$3"
-    local version=$__version__
+    local version
 
     # set prefix if not provided
     if [ ! $prefix ]; then
@@ -524,7 +524,11 @@ function std_logger(){
     fi
 
     # set version in logger
-    if [ ! $version ] && [ "$VERSION" ]; then
+    if [ -f $pkg_lib/_version.py ]; then
+        source "$pkg_lib/_version.py"
+        version=$__version__
+
+    elif [ "$VERSION" ]; then
         version=$VERSION
 
     elif [ ! "$VERSION" ]; then
@@ -545,7 +549,7 @@ function std_logger(){
 
     else
 
-        echo -e "$(date +'%Y-%m-%d %T') $host - $pkg - $VERSION - [$prefix]: $msg" >> "$log_file"
+        echo -e "$(date +'%Y-%m-%d %T') $host - $pkg - $version - [$prefix]: $msg" >> "$log_file"
 
     fi
     #
