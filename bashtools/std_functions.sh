@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.7.6"
+VERSION="2.7.7"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -524,7 +524,7 @@ function std_logger(){
     fi
 
     # set version in logger
-    if [ -f $pkg_lib/_version.py ]; then
+    if [ $pkg_lib ] && [ -f $pkg_lib/_version.py ]; then
         source "$pkg_lib/_version.py"
         version=$__version__
 
