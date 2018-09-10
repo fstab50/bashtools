@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.7.5"
+VERSION="2.7.6"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -500,22 +500,53 @@ function python_module_depcheck(){
 
 
 function std_logger(){
+    ##
+    ##  Summary:
+    ##
+    ##      std_logger is usually invoked from std_message; ie, all messages
+    ##      to stdout are also logged in this function to the log file.
+    ##
+    ##  Args:
+    ##      - msg:      body of the log message text
+    ##      - prefix:   INFO, DEBUG, etc. Note: WARN is handled by std_warn function
+    ##      - log_file: The file to which log messages should be written
+    ##      - version:  Populated by global var __version__ inherited from the calling
+    ##                  program which sources std_functions.sh (this module)
+    ##
     local msg="$1"
     local prefix="$2"
     local log_file="$3"
-    #
+    local version=$__version__
+
+    # set prefix if not provided
     if [ ! $prefix ]; then
         prefix="INFO"
     fi
+
+    # set version in logger
+    if [ ! $version ] && [ "$VERSION" ]; then
+        version=$VERSION
+
+    elif [ ! "$VERSION" ]; then
+        version="1.0.NA"
+
+    fi
+
+    # write out to log
     if [ ! -f $log_file ]; then
+
         # create log file
         touch $log_file
+
         if [ ! -f $log_file ]; then
-            echo -e "[$prefix]: $pkg ($VERSION): failure to call std_logger, $log_file location not writeable"
+            echo -e "[$prefix]: $pkg ($version): failure to call std_logger, $log_file location not writeable"
             exit $E_DIR
         fi
+
     else
+
         echo -e "$(date +'%Y-%m-%d %T') $host - $pkg - $VERSION - [$prefix]: $msg" >> "$log_file"
+
     fi
     #
     # <<--- end function std_logger -->>
