@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.7.7"
+VERSION="2.7.8"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -569,6 +569,7 @@ function std_message(){
     local prefix="$2"
     local log_file="$3"
     local format="$4"
+    local rst=${reset}
 
     if [ $log_file ] && { [ "$prefix" = "ok" ] || [ "$prefix" = "OK" ]; }; then
 
@@ -597,11 +598,11 @@ function std_message(){
 
     elif [ "$prefix" = "OK" ] || [ "$prefix" = "ok" ]; then
 
-        echo -e "\n${yellow}[ $green${BOLD}$pref$yellow ]$reset  $msg\n" | indent04
+        echo -e "\n${yellow}[  $green${BOLD}$pref${rst}${yellow}  ]${rst}  $msg\n" | indent04
 
     else
 
-        echo -e "\n${yellow}[ $cyan$pref$yellow ]$reset  $msg\n" | indent04
+        echo -e "\n${yellow}[ $cyan$pref$yellow ]${rst}  $msg\n" | indent04
 
     fi
     #
@@ -621,15 +622,16 @@ function std_error(){
 function std_warn(){
     local msg="$1"
     local byl="$(echo -e ${brightyellow2})"
+    local rst="$(echo -e ${reset})"
 
     std_logger "$msg" "WARN" $LOG_FILE
 
     if [ "$3" ]; then
         # there is a second line of the msg, to be printed by the caller
-        echo -e "\n${yellow}[ ${byl}WARN${yellow} ]$reset  $msg" | indent04
+        echo -e "\n${yellow}[${rst} ${byl}WARN${yellow} ]$reset  $msg" | indent04
     else
         # msg is only 1 line sent by the caller
-        echo -e "\n${yellow}[ ${byl}WARN${yellow} ]$reset  $msg\n" | indent04
+        echo -e "\n${yellow}[${rst} ${byl}WARN${yellow} ]$reset  $msg\n" | indent04
     fi
     #
     # <<-- end function std_warn -->>
