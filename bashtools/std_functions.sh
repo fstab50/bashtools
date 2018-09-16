@@ -266,7 +266,7 @@ function pkg_info(){
     Module Version:     ${act}$version${rst}
     ___________________________________________________
 
-    $pkg Functions:
+    Module Function List:
 
 EOM
     printf -- '%s\n' "$(declare -F | awk '{print $3}')" > /tmp/.functions
