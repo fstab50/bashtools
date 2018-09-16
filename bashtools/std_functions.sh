@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.7.8"
+VERSION="2.7.9"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -240,6 +240,40 @@ function environment_info(){
     fi
     #
     #<-- end function environment_info -->
+}
+
+
+function pkg_info(){
+    ##
+    ##  displays information about this library module
+    ##
+    ##     - dependent module colors.sh is located always adjacent
+    ##     - sourcing of dep modules must occur after local var to avoid overwrite
+    ##       of variable values in this module
+    ##
+    local version=$VERSION
+    source $pkg_path/colors.sh
+    bd=$(echo -e ${bold})
+    act=$(echo -e ${orange})
+    rst=$(echo -e ${reset})
+    # construct, display help msg output
+    cat <<EOM
+    ___________________________________________________
+
+    ${title}Bashtools Library${rst}: Standard Functions
+
+    Module Name:        ${cyan}$pkg${rst}
+    Module Version:     ${act}$version${rst}
+    ___________________________________________________
+
+    $pkg Functions:
+
+EOM
+    printf -- '%s\n' "$(declare -F | awk '{print $3}')" > /tmp/.functions
+    for l in $(cat /tmp/.functions); do
+        printf -- '\t%s %s\n' "-" "$l"
+    done
+    rm /tmp/.functions
 }
 
 
@@ -683,3 +717,8 @@ function timer(){
     #
     # <<-- end function timer -->>
 }
+
+# print information about this package
+if [ "$pkg" = "std_functions.sh" ] && { [ "$1" = "-h" ] ||  [ "$1" = "--help" ]; }; then
+    pkg_info
+fi
