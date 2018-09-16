@@ -239,7 +239,7 @@ function environment_info(){
         std_logger "Detected: $($prog --version | head -1)" $prefix $log_file
     fi
     #
-    #<-- end function environment_info -->
+    # <<-- end function environment_info -->>
 }
 
 
@@ -256,6 +256,11 @@ function pkg_info(){
     bd=$(echo -e ${bold})
     act=$(echo -e ${orange})
     rst=$(echo -e ${reset})
+
+    # generate list of functions
+    printf -- '%s\n' "$(declare -F | awk '{print $3}')" > /tmp/.functions
+    sum=$(cat /tmp/.functions | wc -l)
+
     # construct, display help msg output
     cat <<EOM
     ___________________________________________________
@@ -266,14 +271,16 @@ function pkg_info(){
     Module Version:     ${act}$version${rst}
     ___________________________________________________
 
-    Module Function List:
+    Module Contains $sum Functions:
 
 EOM
-    printf -- '%s\n' "$(declare -F | awk '{print $3}')" > /tmp/.functions
+    # display list of function names in this module
     for l in $(cat /tmp/.functions); do
         printf -- '\t%s %s\n' "-" "$l"
     done
     rm /tmp/.functions
+    #
+    # <<-- end function pkg_info -->>
 }
 
 
