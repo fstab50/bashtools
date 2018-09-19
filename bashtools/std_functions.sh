@@ -565,8 +565,8 @@ function std_logger(){
     fi
 
     # set version in logger
-    if [ $pkg_lib ] && [ -f $pkg_lib/_version.py ]; then
-        source "$pkg_lib/_version.py"
+    if [ $pkg_lib ] && [ -f $pkg_lib/version.py ]; then
+        source "$pkg_lib/version.py"
         version=$__version__
 
     elif [ "$VERSION" ]; then
