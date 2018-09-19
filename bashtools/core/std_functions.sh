@@ -24,12 +24,13 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.5.3"
+VERSION="2.7.9"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
     exit
 fi
+
 
 function array2json(){
     ## converts associative array to single-level (no nested keys) json file output ##
@@ -62,6 +63,7 @@ function array2json(){
     # <-- end function array2json -->
 }
 
+
 function authenticated(){
     ## validates authentication using iam user or role ##
     local profilename="$1"
@@ -80,6 +82,22 @@ function authenticated(){
     else
         return 0
     fi
+}
+
+
+function binary_depcheck(){
+    ## validate binary dependencies installed
+    local check_list=( "$@" )
+    local msg
+    #
+    for prog in "${check_list[@]}"; do
+        if ! type "$prog" > /dev/null 2>&1; then
+            msg="$prog is required and not found in the PATH. Aborting (code $E_DEPENDENCY)"
+            std_error_exit "$msg" $E_DEPENDENCY
+        fi
+    done
+    #
+    # <<-- end function binary_depcheck -->>
 }
 
 
@@ -112,6 +130,7 @@ function convert_time(){
     # <-- end function convert_time -->
     #
 }
+
 
 function convert_time_months(){
     # time format conversion (http://stackoverflow.com/users/1030675/choroba)
@@ -146,9 +165,9 @@ function convert_time_months(){
         ((sec=num))
     fi
     if (( $mo > 0 )); then
-        echo "$mo"m,"$day"d
+        echo -e "$mo"m,"$day"d
     else
-        echo "$day"d,"$hour"h,"$min"m
+        echo -e "$day"d,"$hour"h,"$min"m
     fi
     #
     # <-- end function convert_time -->
@@ -220,41 +239,158 @@ function environment_info(){
         std_logger "Detected: $($prog --version | head -1)" $prefix $log_file
     fi
     #
-    #<-- end function environment_info -->
+    # <<-- end function environment_info -->>
+}
+
+
+function pkg_info(){
+    ##
+    ##  displays information about this library module
+    ##
+    ##     - dependent module colors.sh is located always adjacent
+    ##     - sourcing of dep modules must occur after local var to avoid overwrite
+    ##       of variable values in this module
+    ##
+    local version=$VERSION
+    source $pkg_path/colors.sh
+    bd=$(echo -e ${bold})
+    act=$(echo -e ${orange})
+    rst=$(echo -e ${reset})
+
+    # generate list of functions
+    printf -- '%s\n' "$(declare -F | awk '{print $3}')" > /tmp/.functions
+    sum=$(cat /tmp/.functions | wc -l)
+
+    # construct, display help msg output
+    cat <<EOM
+    ___________________________________________________
+
+    ${title}Bashtools Library${rst}: Standard Functions
+
+    Module Name:        ${cyan}$pkg${rst}
+    Module Version:     ${act}$version${rst}
+    ___________________________________________________
+
+    Module Contains $sum Functions:
+
+EOM
+    # display list of function names in this module
+    for l in $(cat /tmp/.functions); do
+        printf -- '\t%s %s\n' "-" "$l"
+    done
+    rm /tmp/.functions
+    #
+    # <<-- end function pkg_info -->>
 }
 
 
 function is_installed(){
+    ##
     ## validate if binary previously installed  ##
+    ##
     local binary="$1"
     local location=$(which $binary 2>/dev/null)
+
     if [ $location ]; then
+
         std_message "$binary is installed:  $location" "INFO" $LOG_FILE
         return 0
+
     else
+
         return 1
+
     fi
+    #
+    #<-- end function is_installed -->
 }
 
 
+function is_float(){
+    ##
+    ## Checks type for floating point number
+    ## see is_number integer type checking
+    ##
+    local num="$1"
+    local regex='^[0-9]+[.][0-9]+?$'
+
+    if [[ $num =~ $regex ]] ; then
+
+        # int or float
+        return 0
+
+    fi
+
+    return 1        # not a floating point number
+    #
+    #<-- end function is_float -->
+}
+
+
+function is_int(){
+    ##
+    ## see is_float for decimal type checking ##
+    ##
+    local num="$1"
+    local regex='^[0-9]+$'
+
+    if [[ $num =~ $regex ]] ; then
+
+        # int or float
+        return 0
+
+    fi
+
+    return 1        # not an integer
+    #
+    #<-- end function is_int -->
+}
+
+
+function is_number(){
+    ##
+    ## type checking; any, int or decimal type ##
+    ##
+    local num="$1"
+    local regex='^[0-9]+([.][0-9]+)?$'
+
+    if [[ $num =~ $regex ]] ; then
+
+        # int or float
+        return 0
+
+    fi
+
+    return 1        # not a number (is alpha character)
+    #
+    #<-- end function is_number -->
+}
+
 
 function linux_distro(){
+    ##
     ## determine linux os distribution ##
+    ##
     local os_major
     local os_release
     local os_codename
     declare -a distro_info
 
     if [ "$(which lsb_release)" ]; then
+
         distro_info=( $(lsb_release -sirc) )
+
         if [[ ${#distro_detect[@]} -eq 3 ]]; then
             os_major=${distro_info[0]}
             os_release=${distro_info[1]}
             os_codename=${distro_info[2]}
         fi
+
     else
+
         ## AMAZON Linux ##
         if [ "$(grep -i amazon /etc/os-release  | head -n 1)" ]; then
+
             os_major="amazonlinux"
             if [ "$(grep VERSION_ID /etc/os-release | awk -F '=' '{print $2}')" = '"2"' ]; then
                 os_release="$(grep VERSION /etc/os-release | grep -v VERSION_ID | awk -F '=' '{print $2}')"
@@ -266,11 +402,13 @@ function linux_distro(){
 
         ## REDHAT Linux ##
         elif [ $(grep -i redhat /etc/os-release  | head -n 1) ]; then
+
             os_major="redhat"
             os_release="future"
 
         ## UBUNTU, ubuntu variants ##
         elif [ "$(grep -i ubuntu /etc/os-release)" ]; then
+
             os_major="ubuntu"
             if [ "$(grep -i mint /etc/os-release | head -n1)" ]; then
                 os_release="linuxmint"
@@ -281,19 +419,28 @@ function linux_distro(){
 
         ## distribution not determined ##
         else
+
             os_major="unknown"; os_release="unknown"
+
         fi
+
     fi
+
     # set distribution type in environment
     export OS_DISTRO="$os_major"
     std_logger "Operating system identified as Major Version: $os_major, Minor Version: $os_release" "INFO" $LOG_FILE
+
     # return major, minor disto versions
-    echo "$os_major $os_release $os_codename"
+    echo -e "$os_major $os_release $os_codename"
+    #
+    # <<--- end function linux_distro -->>
 }
 
 
 function print_header(){
+    ##
     ## print formatted report header ##
+    ##
     local title="$1"
     local width="$2"
     local reportfile="$3"
@@ -308,102 +455,277 @@ function print_header(){
     echo -e "${frame}" >> $reportfile
     printf '%*s' "$width" '' | tr ' ' _  | indent02 >> $reportfile
     echo -e "${bodytext}" >> $reportfile
+    #
+    # <<--- end function print_header -->>
 }
 
+
 function print_footer(){
+    ##
     ## print formatted report footer ##
+    ##
     local footer="$1"
     local width="$2"
-    #
+
     printf "%-10s %*s\n" $(echo -e ${frame}) "$(($width - 1))" '' | tr ' ' _ | indent02
     echo -e "${bodytext}"
     echo -ne $footer | indent20
     echo -e "${frame}"
     printf '%*s\n' "$width" '' | tr ' ' _ | indent02
     echo -e "${bodytext}"
+    #
+    # <<--- end function print_footer -->>
 }
 
+
 function print_separator(){
+    ##
     ## prints single bar separator of width ##
+    ##
+
     local width="$1"
+
     echo -e "${frame}"
     printf "%-10s %*s" $(echo -e ${frame}) "$(($width - 1))" '' | tr ' ' _ | indent02
     echo -e "${bodytext}\n"
+    #
+    # <<--- end function linux_distro -->>
+}
 
+
+function python_version_depcheck(){
+    ##
+    ## dependency check for a specific version of python binary ##
+    ##
+    local version
+    local version_min="$1"
+    local version_max="$2"
+    local msg
+
+    local_bin=$(which python3)
+    # determine binary version
+    version=$($local_bin 2>&1 --version | awk '{print $2}' | cut -c 1-3)
+
+    if (( $(echo "$version > $version_max" | bc -l) )) || (( $(echo "$version < $version_min" | bc -l) )); then
+
+        msg="python version $version detected - must be > $version_min, but < $version_max"
+        std_error_exit "$msg" $E_DEPENDENCY
+
+    fi
+    #
+    # <<-- end function python_depcheck -->>
+}
+
+
+function python_module_depcheck(){
+    ##
+    ## validate python library dependencies
+    ##
+    local check_list=( "$@" )
+    local msg
+
+    for module in "${check_list[@]}"; do
+
+        exitcode=$(python3 -c "import $module" > /dev/null 2>&1; echo $?)
+
+        if [[ $exitcode == "1" ]]; then
+            # module not imported, not found
+            msg="$module is a required python library. Aborting (code $E_DEPENDENCY)"
+            std_error_exit "$msg" $E_DEPENDENCY
+        fi
+
+    done
+    #
+    # <<-- end function python_module_depcheck -->>
 }
 
 
 function std_logger(){
+    ##
+    ##  Summary:
+    ##
+    ##      std_logger is usually invoked from std_message; ie, all messages
+    ##      to stdout are also logged in this function to the log file.
+    ##
+    ##  Args:
+    ##      - msg:      body of the log message text
+    ##      - prefix:   INFO, DEBUG, etc. Note: WARN is handled by std_warn function
+    ##      - log_file: The file to which log messages should be written
+    ##      - version:  Populated if version module exists in pkg_lib. __version__ sourced
+    ##                  from within the version module
+    ##
     local msg="$1"
     local prefix="$2"
     local log_file="$3"
-    #
+    local version
+
+    # set prefix if not provided
     if [ ! $prefix ]; then
         prefix="INFO"
     fi
+
+    # set version in logger
+    if [ $pkg_lib ] && [ -f $pkg_lib/version.py ]; then
+        source "$pkg_lib/version.py"
+        version=$__version__
+
+    elif [ "$VERSION" ]; then
+        version=$VERSION
+
+    elif [ ! "$VERSION" ]; then
+        version="1.0.NA"
+
+    fi
+
+    # write out to log
     if [ ! -f $log_file ]; then
+
         # create log file
         touch $log_file
+
         if [ ! -f $log_file ]; then
-            echo "[$prefix]: $pkg ($VERSION): failure to call std_logger, $log_file location not writeable"
+            echo -e "[$prefix]: $pkg ($version): failure to call std_logger, $log_file location not writeable"
             exit $E_DIR
         fi
+
     else
-        echo "$(date +'%Y-%m-%d %T') $host - $pkg - $VERSION - [$prefix]: $msg" >> "$log_file"
+
+        echo -e "$(date +'%Y-%m-%d %T') $host - $pkg - $version - [$prefix]: $msg" >> "$log_file"
+
     fi
+    #
+    # <<--- end function std_logger -->>
 }
 
+
 function std_message(){
-    #
-    # Caller formats:
-    #
-    #   Logging to File | std_message "xyz message" "INFO" "/pathto/log_file"
-    #
-    #   No Logging  | std_message "xyz message" "INFO"
-    #
+    ##
+    ## Caller formats:
+    ##
+    ##   Logging to File | std_message "xyz message" "INFO" "/pathto/log_file"
+    ##
+    ##   No Logging  | std_message "xyz message" "INFO"
+    ##
     local msg="$1"
     local prefix="$2"
     local log_file="$3"
     local format="$4"
-    #
-    if [ $log_file ]; then
+    local rst=${reset}
+
+    if [ $log_file ] && { [ "$prefix" = "ok" ] || [ "$prefix" = "OK" ]; }; then
+
+        # ensure info log message written to log
+        std_logger "$msg" "INFO" "$log_file"
+
+    elif [ $log_file ]; then
+
         std_logger "$msg" "$prefix" "$log_file"
+
     fi
+
     [[ $QUIET ]] && return
     shift
     pref="----"
+
     if [[ $1 ]]; then
         pref="${1:0:5}"
         shift
     fi
+
+    # output
     if [ $format ]; then
+
         echo -e "${yellow}[ $cyan$pref$yellow ]$reset  $msg" | indent04
+
+    elif [ "$prefix" = "OK" ] || [ "$prefix" = "ok" ]; then
+
+        echo -e "\n${yellow}[  $green${BOLD}$pref${rst}${yellow}  ]${rst}  $msg\n" | indent04
+
     else
-        echo -e "\n${yellow}[ $cyan$pref$yellow ]$reset  $msg\n" | indent04
+
+        echo -e "\n${yellow}[ $cyan$pref$yellow ]${rst}  $msg\n" | indent04
+
     fi
+    #
+    # <<-- end function std_message -->>
 }
+
 
 function std_error(){
     local msg="$1"
     std_logger "$msg" "ERROR" $LOG_FILE
     echo -e "\n${yellow}[ ${red}ERROR${yellow} ]$reset  $msg\n" | indent04
+    #
+    # <<-- end function std_error -->>
 }
+
 
 function std_warn(){
     local msg="$1"
+    local byl="$(echo -e ${brightyellow2})"
+    local rst="$(echo -e ${reset})"
+
     std_logger "$msg" "WARN" $LOG_FILE
+
     if [ "$3" ]; then
         # there is a second line of the msg, to be printed by the caller
-        echo -e "\n${yellow}[ ${red}WARN${yellow} ]$reset  $msg" | indent04
+        echo -e "\n${yellow}[${rst} ${byl}WARN${yellow} ]$reset  $msg" | indent04
     else
         # msg is only 1 line sent by the caller
-        echo -e "\n${yellow}[ ${red}WARN${yellow} ]$reset  $msg\n" | indent04
+        echo -e "\n${yellow}[${rst} ${byl}WARN${yellow} ]$reset  $msg\n" | indent04
     fi
+    #
+    # <<-- end function std_warn -->>
 }
 
+
 function std_error_exit(){
+    ##
+    ##  standard function presents error msg, automatically
+    ##  exits error code
     local msg="$1"
     local status="$2"
     std_error "$msg"
     exit $status
+    #
+    # <<-- end function std_warn -->>
 }
+
+
+function timer(){
+    ## measure total execution runtime ##
+    #
+    # --------- USAGE -------------
+    #
+    #       @ beginning:
+    #       START=$(timer)
+    #
+    #       @ end time:
+    #       printf 'Total runtime: %s\n' $(timer $START)
+    #
+    #
+    if [[ $# -eq 0 ]]; then
+
+        echo $(date '+%s')
+
+    else
+        local  stime=$1
+        etime=$(date '+%s')
+
+        if [[ -z "$stime" ]]; then stime=$etime; fi
+
+        dt=$((etime - stime))
+        ds=$((dt % 60))
+        dm=$(((dt / 60) % 60))
+        dh=$((dt / 3600))
+        printf '%d:%02d:%02d' $dh $dm $ds
+
+    fi
+    #
+    # <<-- end function timer -->>
+}
+
+# print information about this package
+if [ "$pkg" = "std_functions.sh" ] && { [ "$1" = "-h" ] ||  [ "$1" = "--help" ]; }; then
+    pkg_info
+fi
