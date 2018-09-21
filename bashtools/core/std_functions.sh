@@ -204,6 +204,7 @@ function delay_spinner(){
         sleep $delay
         printf "\b\b\b\b\b\b"
     done
+    printf -- '\n\n'
     #
     # <-- end function ec2cli_spinner -->
     #
