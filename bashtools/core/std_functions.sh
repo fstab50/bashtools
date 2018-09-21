@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.7.9"
+VERSION="2.7.10"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -176,7 +176,14 @@ function convert_time_months(){
 
 
 function delay_spinner(){
-    # vars
+    ##
+    ##  Usage:
+    ##
+    ##      $ long-running-command  &
+    ##      $ delay_spinner "  Please wait msg..."
+    ##
+    ##  Spinner exists when long-running-command completes
+    ##
     local PROGRESSTXT
     if [ ! "$1" ]; then
         PROGRESSTXT="  Please wait..."
