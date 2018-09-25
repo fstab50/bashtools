@@ -53,15 +53,18 @@ function get_current_version(){
 
     # check if installed locally
     if check_upgrade $PACKAGE; then
+
         version=$($PIP_CALL list --outdated | grep $PACKAGE | awk '{print $3}')
         std_message "Current version ($version) from available pypi ${yellow}$PACKAGE${reset} upgrade." INFO
         return 0
+
     else
         pip_local=$($PIP_CALL list | grep -i $PACKAGE  | awk '{print $2}')
     fi
 
     # if not, search pypi
     if [ -z $pip_local ]; then
+
         # search pypi repo
         pip_search=$($PIP_CALL search $PACKAGE | awk -F '(' '{print $2}' | awk -F ')' '{print $1}')
 
@@ -73,6 +76,7 @@ function get_current_version(){
             std_message "Using version number from search for $PACKAGE in pypi repository." INFO
             version=$pip_search
         fi
+
     else
         std_message "Using locally installed $PACKAGE version number." INFO
         version=$pip_local
@@ -81,13 +85,18 @@ function get_current_version(){
 
 
 function update_minor_version(){
+    ##
     ## increment minor version ##
+    ##
     local force_version="$1"
     #
     if [ $force_version ]; then
-        version=$force_version
-    fi
-    if [ $version ]; then
+
+        std_message "Updated_version number is: ${BOLD}$force_version${UNBOLD}" INFO
+        echo "__version__ = '${force_version}'" > $ROOT/$PACKAGE/_version.py
+
+    else
+
         if [ -z $(echo $version | awk -F '.' '{print $3}') ]; then
             add='1'
         else
@@ -96,8 +105,7 @@ function update_minor_version(){
         updated_version="$(echo $version | awk -F '.' '{print $1"."$2}').$add"
         std_message "Updated_version number is: ${BOLD}$updated_version${UNBOLD}" INFO
         echo "__version__ = '${updated_version}'" > $ROOT/$PACKAGE/_version.py
-    else
-        echo -e "\nNo version number identified. Abort\n"
+
     fi
 }
 
