@@ -439,6 +439,7 @@ EOM
     for l in $(cat /tmp/.functions); do
         printf -- '\t%s %s\n' "-" "$l"
     done
+    printf -- '\n'
     rm /tmp/.functions
     #
     # <<-- end function pkg_info -->>
@@ -797,6 +798,6 @@ function timer(){
 }
 
 # print information about this package
-if [ "$pkg" = "std_functions.sh" ] && { [ "$1" = "-h" ] ||  [ "$1" = "--help" ]; }; then
+if [ "$pkg" = "std_functions.sh" ]; then
     pkg_info
 fi
