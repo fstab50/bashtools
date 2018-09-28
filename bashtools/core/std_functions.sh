@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.7.10"
+VERSION="2.8.0"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -251,47 +251,6 @@ function environment_info(){
 }
 
 
-function pkg_info(){
-    ##
-    ##  displays information about this library module
-    ##
-    ##     - dependent module colors.sh is located always adjacent
-    ##     - sourcing of dep modules must occur after local var to avoid overwrite
-    ##       of variable values in this module
-    ##
-    local version=$VERSION
-    source $pkg_path/colors.sh
-    bd=$(echo -e ${bold})
-    act=$(echo -e ${orange})
-    rst=$(echo -e ${reset})
-
-    # generate list of functions
-    printf -- '%s\n' "$(declare -F | awk '{print $3}')" > /tmp/.functions
-    sum=$(cat /tmp/.functions | wc -l)
-
-    # construct, display help msg output
-    cat <<EOM
-    ___________________________________________________
-
-    ${title}Bashtools Library${rst}: Standard Functions
-
-    Module Name:        ${cyan}$pkg${rst}
-    Module Version:     ${act}$version${rst}
-    ___________________________________________________
-
-    Module Contains $sum Functions:
-
-EOM
-    # display list of function names in this module
-    for l in $(cat /tmp/.functions); do
-        printf -- '\t%s %s\n' "-" "$l"
-    done
-    rm /tmp/.functions
-    #
-    # <<-- end function pkg_info -->>
-}
-
-
 function is_installed(){
     ##
     ## validate if binary previously installed  ##
@@ -445,6 +404,47 @@ function linux_distro(){
 }
 
 
+function pkg_info(){
+    ##
+    ##  displays information about this library module
+    ##
+    ##     - dependent module colors.sh is located always adjacent
+    ##     - sourcing of dep modules must occur after local var to avoid overwrite
+    ##       of variable values in this module
+    ##
+    local version=$VERSION
+    source $pkg_path/colors.sh
+    bd=$(echo -e ${bold})
+    act=$(echo -e ${orange})
+    rst=$(echo -e ${reset})
+
+    # generate list of functions
+    printf -- '%s\n' "$(declare -F | awk '{print $3}')" > /tmp/.functions
+    sum=$(cat /tmp/.functions | wc -l)
+
+    # construct, display help msg output
+    cat <<EOM
+    ___________________________________________________
+
+    ${title}Bashtools Library${rst}: Standard Functions
+
+    Module Name:        ${cyan}$pkg${rst}
+    Module Version:     ${act}$version${rst}
+    ___________________________________________________
+
+    Module Contains $sum Functions:
+
+EOM
+    # display list of function names in this module
+    for l in $(cat /tmp/.functions); do
+        printf -- '\t%s %s\n' "-" "$l"
+    done
+    rm /tmp/.functions
+    #
+    # <<-- end function pkg_info -->>
+}
+
+
 function print_header(){
     ##
     ## print formatted report header ##
@@ -522,6 +522,52 @@ function python_version_depcheck(){
     fi
     #
     # <<-- end function python_depcheck -->>
+}
+
+
+function progress_dots(){
+    ##
+    ##  Usage:
+    ##
+    ##      $ long-running-command  &
+    ##      $ delay_spinner "  Please wait msg..."
+    ##
+    ##  Spinner exists when long-running-command completes
+    ##
+    local text
+    local width=$(tput cols)
+    local stop=$(( $width / 4 ))
+    local pid=$!
+    local delay="0.1"
+    local counter="0"
+
+    if [ ! "$1" ]; then text="  Please wait"; else text="$1"; fi
+
+    # min width of dot pattern
+    if [ $stop -lt "80" ]; then stop="80"; fi
+
+    echo -e "\n\n$text\n"
+
+    while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
+
+        if [ "$counter" = "0" ]; then
+            printf -- '%s' "." | indent04
+        elif [ $counter -ge $stop ]; then
+            printf -- '\n%s' "." | indent04
+            counter="0"
+        else
+            printf -- '%s' "."
+        fi
+
+        sleep $delay
+        counter=$(( $counter + 1 ))
+
+    done
+
+    printf -- '\n\n'
+    #
+    # <-- end function ec2cli_spinner -->
+    #
 }
 
 
