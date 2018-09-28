@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.8.0"
+VERSION="2.8.1"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -544,6 +544,7 @@ function progress_dots(){
     local pid=$!
     local delay="0.1"
     local counter="0"
+    local len
 
     if [ ! "$1" ]; then text="Please wait"; else text="$1"; fi
 
@@ -553,15 +554,24 @@ function progress_dots(){
     # min width of dot pattern
     if [ $stop -lt "80" ]; then stop="80"; fi
 
-    printf -- '\n\n%s\n' "$text" | indent04
+    len=${#text}                            # length of text msg, chars
+    stopmarker=$stop                        # stop column when not title row
+    titlestop=$(( $stop - $len ))           # stop column on text msg row
 
+    # title
+    printf -- '\n\n%s' "$text" | indent04
+    # output progress dots
     while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
 
         if [ "$counter" = "0" ]; then
-            printf -- '%s' "." | indent04
+            printf -- '%s' "."
+            stop=$titlestop
+
         elif [ $counter -ge $stop ]; then
             printf -- '\n%s' "." | indent04
             counter="0"
+            stop=$stopmarker
+
         else
             printf -- '%s' "."
         fi
