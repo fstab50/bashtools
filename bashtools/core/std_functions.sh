@@ -530,23 +530,30 @@ function progress_dots(){
     ##  Usage:
     ##
     ##      $ long-running-command  &
-    ##      $ delay_spinner "  Please wait msg..."
+    ##      $ progress_dots "  Please wait msg..."
     ##
-    ##  Spinner exists when long-running-command completes
+    ##      Exists when long-running-command completes
+    ##
+    ##  Dependencies:
+    ##      - requires colors.sh (source of indent function)
     ##
     local text
+    local fast="$2"
     local width=$(tput cols)
     local stop=$(( $width / 4 ))
     local pid=$!
     local delay="0.1"
     local counter="0"
 
-    if [ ! "$1" ]; then text="  Please wait"; else text="$1"; fi
+    if [ ! "$1" ]; then text="Please wait"; else text="$1"; fi
+
+    # print fast dots if short process
+    if [ "$2" ]; then delay="$(( 1/15 ))"; fi
 
     # min width of dot pattern
     if [ $stop -lt "80" ]; then stop="80"; fi
 
-    echo -e "\n\n$text\n"
+    printf -- '\n\n%s\n' "$text" | indent04
 
     while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
 
