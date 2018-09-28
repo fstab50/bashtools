@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.8.1"
+VERSION="2.8.2"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -531,7 +531,7 @@ function progress_dots(){
     ##  Usage:
     ##
     ##      $ long-running-command  &
-    ##      $ progress_dots "  Please wait msg..."
+    ##      $ progress_dots --text "Process XYZ Starting" --end " End process XYZ"
     ##
     ##      Exists when long-running-command completes
     ##
@@ -539,7 +539,8 @@ function progress_dots(){
     ##      - requires colors.sh (source of indent function)
     ##
     local text
-    local fast="$2"
+    local endmsg
+    local fast
     local width=$(tput cols)
     local stop=$(( $width / 4 ))
     local pid=$!
@@ -547,10 +548,28 @@ function progress_dots(){
     local counter="0"
     local len
 
-    if [ ! "$1" ]; then text="Please wait"; else text="$1"; fi
+    while [ $# -gt 0 ]; do
+        case $1 in
+            -e | --end)
+                endmsg="$2"
+                shift 2
+                ;;
+            -f | --fast)
+                fast="$2"
+                shift 2
+                ;;
+            -t | --text)
+                text=$2
+                shift 2
+                ;;
+        esac
+    done
+
+    if [ ! "$text" ]; then text="Please wait"; fi
+    if [ ! "$endmsg" ]; then endmsg="done."; fi
 
     # print fast dots if short process
-    if [ "$2" ]; then delay="$(( 1/15 ))"; fi
+    if [ "$fast" ]; then delay="$(( 1/15 ))"; fi
 
     # min width of dot pattern
     if [ $stop -lt "80" ]; then stop="80"; fi
@@ -582,7 +601,7 @@ function progress_dots(){
 
     done
 
-    printf -- '\n\n'
+    printf -- "  ${endmsg}\n\n"
     #
     # <-- end function ec2cli_spinner -->
     #
