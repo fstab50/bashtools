@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.8.2"
+VERSION="2.8.3"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -531,7 +531,7 @@ function progress_dots(){
     ##  Usage:
     ##
     ##      $ long-running-command  &
-    ##      $ progress_dots --text "Process XYZ Starting" --end " End process XYZ"
+    ##      $ progress_dots --text "Process XYZ Starting" --end " End xyz"
     ##
     ##      Exists when long-running-command completes
     ##
@@ -551,16 +551,15 @@ function progress_dots(){
     while [ $# -gt 0 ]; do
         case $1 in
             -e | --end)
-                endmsg="$2"
-                shift 2
+                endmsg="$2"; shift 2
                 ;;
+
             -f | --fast)
-                fast="$2"
-                shift 2
+                fast="$2"; shift 2
                 ;;
+
             -t | --text)
-                text=$2
-                shift 2
+                text=$2; shift 2
                 ;;
         esac
     done
@@ -640,10 +639,15 @@ function std_logger(){
     ##
     ##  Args:
     ##      - msg:      body of the log message text
-    ##      - prefix:   INFO, DEBUG, etc. Note: WARN is handled by std_warn function
+    ##
+    ##      - prefix:   INFO, DEBUG, etc. Note: WARN is handled by std_warn
+    ##                  function
+    ##
     ##      - log_file: The file to which log messages should be written
-    ##      - version:  Populated if version module exists in pkg_lib. __version__ sourced
-    ##                  from within the version module
+    ##
+    ##      - version:  Populated if version module exists in
+    ##                  pkg_lib. __version__ sourced from within the
+    ##                  version module
     ##
     local msg="$1"
     local prefix="$2"
@@ -651,9 +655,7 @@ function std_logger(){
     local version
 
     # set prefix if not provided
-    if [ ! $prefix ]; then
-        prefix="INFO"
-    fi
+    if [ ! $prefix ]; then prefix="INFO"; fi
 
     # set version in logger
     if [ $pkg_lib ] && [ -f $pkg_lib/version.py ]; then
@@ -675,7 +677,7 @@ function std_logger(){
         touch $log_file
 
         if [ ! -f $log_file ]; then
-            echo -e "[$prefix]: $pkg ($version): failure to call std_logger, $log_file location not writeable"
+            echo -e "[$prefix]: $pkg ($version): std_logger failure, $log_file path not writeable"
             exit $E_DIR
         fi
 
@@ -774,6 +776,7 @@ function std_error_exit(){
     ##
     ##  standard function presents error msg, automatically
     ##  exits error code
+    ##
     local msg="$1"
     local status="$2"
     std_error "$msg"
@@ -785,16 +788,15 @@ function std_error_exit(){
 
 function timer(){
     ## measure total execution runtime ##
-    #
-    # --------- USAGE -------------
-    #
-    #       @ beginning:
-    #       START=$(timer)
-    #
-    #       @ end time:
-    #       printf 'Total runtime: %s\n' $(timer $START)
-    #
-    #
+    ##
+    ##    Usage:
+    ##
+    ##       @ beginning:
+    ##       $ START=$(timer)
+    ##
+    ##       @ end time:
+    ##       $ printf 'Total runtime: %s\n' $(timer $START)
+    ##
     if [[ $# -eq 0 ]]; then
 
         echo $(date '+%s')
