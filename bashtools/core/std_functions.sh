@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.8.3"
+VERSION="2.8.4"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -755,10 +755,13 @@ function std_error(){
 
 function std_warn(){
     local msg="$1"
+    local logfile="$2"
     local byl="$(echo -e ${brightyellow2})"
     local rst="$(echo -e ${reset})"
 
-    std_logger "$msg" "WARN" $LOG_FILE
+    if [ ! $logfile ]; then logfile=$LOG_FILE; fi
+
+    std_logger "$msg" "WARN" $log_file
 
     if [ "$3" ]; then
         # there is a second line of the msg, to be printed by the caller
