@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.8.4"
+VERSION="2.8.5"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -568,7 +568,7 @@ function progress_dots(){
     if [ ! "$endmsg" ]; then endmsg="done."; fi
 
     # print fast dots if short process
-    if [ "$fast" ]; then delay="$(( 1/15 ))"; fi
+    if [ "$fast" = "true" ]; then delay="$(( 1/15 ))"; fi
 
     # min width of dot pattern
     if [ $stop -lt "80" ]; then stop="80"; fi
