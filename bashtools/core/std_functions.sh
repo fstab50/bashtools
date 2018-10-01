@@ -755,11 +755,11 @@ function std_error(){
 
 function std_warn(){
     local msg="$1"
-    local logfile="$2"
+    local log_file="$2"
     local byl="$(echo -e ${brightyellow2})"
     local rst="$(echo -e ${reset})"
 
-    if [ ! $logfile ]; then logfile=$LOG_FILE; fi
+    if [ ! $log_file ]; then log_file=$LOG_FILE; fi
 
     std_logger "$msg" "WARN" $log_file
 
