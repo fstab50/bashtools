@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.8.5"
+VERSION="2.8.6"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -652,7 +652,9 @@ function std_logger(){
     local msg="$1"
     local prefix="$2"
     local log_file="$3"
+    local rst=$(echo -e ${RESET})
     local version
+    local strip_ansi="false"
 
     # set prefix if not provided
     if [ ! $prefix ]; then prefix="INFO"; fi
@@ -681,9 +683,14 @@ function std_logger(){
             exit $E_DIR
         fi
 
+    elif [ "$strip_ansi" = "true" ]; then
+
+        echo -e "$(date +'%Y-%m-%d %T') $host - $pkg - $version - [$prefix]: $msg${rst}" | \
+        sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|G|K]//g" >> "$log_file"
+
     else
 
-        echo -e "$(date +'%Y-%m-%d %T') $host - $pkg - $version - [$prefix]: $msg" >> "$log_file"
+        echo -e "$(date +'%Y-%m-%d %T') $host - $pkg - $version - [$prefix]: $msg${rst}" >> "$log_file"
 
     fi
     #
