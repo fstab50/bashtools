@@ -7,7 +7,8 @@ function get_regions(){
     ##
     local i="0"
     local location
-    local regioncode="$1"
+    local profilename="$1"
+    local regioncode="$2"
     local tmp='/tmp'
 
     declare -a arr_regions
@@ -21,7 +22,7 @@ function get_regions(){
 
     else
         # collect list of all current AWS Regions globally:
-        aws ec2 describe-regions --profile $PROFILE --output json > $tmp/.regions.json
+        aws ec2 describe-regions --profile $profilename --output json > $tmp/.regions.json
         arr_regions=( "$(jq -r .Regions[].RegionName $tmp/.regions.json)" )
     fi
 
@@ -77,10 +78,15 @@ function get_regions(){
                 location="New Region"
                 ;;
         esac
+
+        if [ ! $regioncode ]; then printf -- '%s\t%s\n' "$region" "$location"; fi
+
         i=$(( i+1 ))
     done
-    echo "$region $location"
+    echo "$region : $location"
     return 0
     #
     # << --- end function get_regions --->>
 }
+
+get_regions "$1"
