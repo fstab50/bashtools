@@ -7,7 +7,7 @@ function get_regions(){
     ##
     local i="0"
     local location
-    local region="$1"
+    local regioncode="$1"
     local tmp='/tmp'
 
     declare -a arr_regions
@@ -15,12 +15,15 @@ function get_regions(){
     if [ -z "$(type jq 2>/dev/null)" ] || [ -z "$(type aws 2>/dev/null)" ]; then
         printf -- 'DependencyFail\n'
         return 1
+
+    elif [ $regioncode ]; then
+        arr_regions=( "$regioncode" )
+
     else
         # collect list of all current AWS Regions globally:
         aws ec2 describe-regions --profile $PROFILE --output json > $tmp/.regions.json
         arr_regions=( "$(jq -r .Regions[].RegionName $tmp/.regions.json)" )
     fi
-    # output choices
 
     for region in ${arr_regions[@]}; do
         # set region location description
@@ -32,8 +35,8 @@ function get_regions(){
                 location="Europe (London, UK)"
                 ;;
             eu-west-3)
-                    location="Europe (Paris, France)"
-                    ;;
+                location="Europe (Paris, France)"
+                ;;
             eu-central-1)
                 location="Europe (Frankfurt, Germany)"
                 ;;
