@@ -29,6 +29,24 @@ function get_regions(){
     for region in ${arr_regions[@]}; do
         # set region location description
         case "$region" in
+            ap-northeast-1)
+                location="Asia Pacific (Tokyo, Japan)"
+    	        ;;
+    		ap-northeast-2)
+    	        location="Asia Pacific (Seoul, Korea)"
+                ;;
+    	    ap-south-1)
+    	        location="Asia Pacific (Mumbai, India)"
+    	        ;;
+            ap-southeast-1)
+                location="Asia Pacific (Singapore)"
+                ;;
+            ap-southeast-2)
+                location="Asia Pacific (Sydney, Austrailia)"
+                ;;
+            ca-central-1)
+                location="Canada (Central)"
+                ;;
             eu-west-1)
                 location="Europe (Ireland)"
                 ;;
@@ -55,24 +73,6 @@ function get_regions(){
                 ;;
             us-west-2)
                 location="United States (Oregon)"
-                ;;
-            ap-northeast-1)
-                location="Asia Pacific (Tokyo, Japan)"
-    	        ;;
-    		ap-northeast-2)
-    	        location="Asia Pacific (Seoul, Korea)"
-                ;;
-    	    ap-south-1)
-    	        location="Asia Pacific (Mumbai, India)"
-    	        ;;
-            ap-southeast-1)
-                location="Asia Pacific (Singapore)"
-                ;;
-            ap-southeast-2)
-                location="Asia Pacific (Sydney, Austrailia)"
-                ;;
-            ca-central-1)
-                location="Canada (Central)"
                 ;;
             *)
                 location="New Region"
