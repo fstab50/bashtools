@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.8.6"
+VERSION="2.8.7"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -49,7 +49,7 @@ function array2json(){
     echo -e "{" > $output_file
     ct=1
     max_keys=${#array_dict[@]}
-    for key in ${!array_dict[@]}; do
+    for key in "${!array_dict[@]}"; do
         if [ $ct == $max_keys ]; then
             # last key, no comma
             echo "\"${key}\": \"${array_dict[${key}]}\"" | indent04 >> $output_file
@@ -763,8 +763,8 @@ function std_error(){
 function std_warn(){
     local msg="$1"
     local log_file="$2"
-    local byl="$(echo -e ${brightyellow2})"
-    local rst="$(echo -e ${reset})"
+    local pc="$(echo -e ${a_brightyellow2})"        # prefix color
+    local rst="$(echo -e ${reset})"                 # reset code
 
     if [ ! $log_file ]; then log_file=$LOG_FILE; fi
 
@@ -772,10 +772,10 @@ function std_warn(){
 
     if [ "$3" ]; then
         # there is a second line of the msg, to be printed by the caller
-        echo -e "\n${yellow}[${rst} ${byl}WARN${yellow} ]$reset  $msg" | indent04
+        echo -e "\n${pv_wgray}[${rst} ${pc}WARN${pv_wgray} ]$reset  $msg" | indent04
     else
         # msg is only 1 line sent by the caller
-        echo -e "\n${yellow}[${rst} ${byl}WARN${yellow} ]$reset  $msg\n" | indent04
+        echo -e "\n${pv_wgray}[${rst} ${pc}WARN${pv_wgray} ]$reset  $msg\n" | indent04
     fi
     #
     # <<-- end function std_warn -->>
