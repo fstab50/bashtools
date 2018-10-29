@@ -712,10 +712,10 @@ function std_message(){
     local format="$4"
     local rst=${reset}
 
-    if [ $log_file ] && { [ "$prefix" = "ok" ] || [ "$prefix" = "OK" ]; }; then
+    if [ $log_file ] && { [ "$prefix" = "ok" ] || [ "$prefix" = "OK" ] || [ "$prefix" = "DONE" ]; }; then
 
         # ensure info log message written to log
-        std_logger "$msg" "INFO" "$log_file"
+        std_logger "$msg" "DONE" "$log_file"
 
     elif [ $log_file ]; then
 
@@ -766,9 +766,9 @@ function std_warn(){
     local pc="$(echo -e ${a_brightyellow2})"        # prefix color
     local rst="$(echo -e ${reset})"                 # reset code
 
-    if [ ! $log_file ]; then log_file=$LOG_FILE; fi
-
-    std_logger "$msg" "WARN" $log_file
+    if [ $log_file ]; then
+        std_logger "$msg" "WARN" $log_file
+    fi
 
     if [ "$3" ]; then
         # there is a second line of the msg, to be printed by the caller
