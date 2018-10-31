@@ -1,5 +1,19 @@
 #!/usr/bin/env bash
 
+# ansi codes
+a_brightblue='\033[38;5;51m'
+a_brightcyan='\033[38;5;36m'
+a_brightgreen='\033[38;5;95;38;5;46m'
+a_brightwhite='\033[38;5;15m'
+
+# formatting
+bold='\u001b[1m'
+reset=$(tput sgr0)
+bbc=$(echo -e ${bold}${a_brightcyan})
+bc=$(echo -e ${a_brightcyan})
+bbw=$(echo -e ${bold}${a_brightwhite})
+bbg=$(echo -e ${bold}${a_brightgreen})
+
 
 function get_regions(){
     ##
@@ -79,11 +93,11 @@ function get_regions(){
                 ;;
         esac
 
-        if [ ! $regioncode ]; then printf -- '%s\t%s\n' "$region" "$location"; fi
+        if [ ! $regioncode ]; then printf -- '%s\t%s\n' "${bc}$region${reset}" "${bbg}$location${reset}"; fi
 
         i=$(( i+1 ))
     done
-    echo "$region : $location"
+    echo "${bc}$region${reset} : $location"
     return 0
     #
     # << --- end function get_regions --->>
