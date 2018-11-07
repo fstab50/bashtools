@@ -769,26 +769,14 @@ function std_message(){
 
     case "$prefix" in
         'ok' | 'OK')
-                if [ $format ]; then
-                    echo -e "${yellow}[  $green${BOLD}$prefix${rst}${yellow}  ]${rst}  $msg" | indent04
-                else
-                    echo -e "\n${yellow}[  $green${BOLD}$prefix${rst}${yellow}  ]${rst}  $msg\n" | indent04
-                fi
+            echo -e "${format}${yellow}[  $green${BOLD}$prefix${rst}${yellow}  ]${rst}  $msg${format}" | indent04
             ;;
 
         'INSTALLED')
-                if [ $format ]; then
-                    echo -e "${yellow}[ $green${BOLD}$prefix${rst}${yellow} ]${rst}  $msg" | indent04
-                else
-                    echo -e "\n${yellow}[ $green${BOLD}$prefix${rst}${yellow} ]${rst}  $msg\n" | indent04
-                fi
+            echo -e "${format}${yellow}[ $green${BOLD}$prefix${rst}${yellow} ]${rst}  $msg${format}" | indent04
             ;;
         *)
-                if [ $format ]; then
-                    echo -e "${yellow}[ $cyan$prefix$yellow ]${rst}  $msg" | indent04
-                else
-                    echo -e "\n${yellow}[ $cyan$prefix$yellow ]${rst}  $msg\n" | indent04
-                fi
+            echo -e "${format}${yellow}[ $cyan$prefix$yellow ]${rst}  $msg${format}" | indent04
             ;;
     esac
     return 0
