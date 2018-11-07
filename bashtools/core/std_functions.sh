@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.8.8"
+VERSION="2.9.0"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -712,40 +712,86 @@ function std_message(){
     local format="$4"
     local rst=${reset}
 
-    if [ $log_file ] && { [ "$prefix" = "ok" ] || [ "$prefix" = "OK" ] || [ "$prefix" = "DONE" ]; }; then
+    if [ "$(echo "$@" | grep '\-\-')" ]; then
+        while [ $# -gt 0 ]; do
+            case $1 in
+                -l | --log)
+                    log_file="$2"; shift 2
+                    ;;
 
-        # ensure info log message written to log
-        std_logger "$msg" "DONE" "$log_file"
+                -f | --format)
+                    format="noblanklines"; shift 1
+                    ;;
 
-    elif [ $log_file ]; then
+                -p | --prefix)
+                    prefix="$2"; shift 2
+                    ;;
 
-        std_logger "$msg" "$prefix" "$log_file"
+                -pc | --prefixcolor)
+                    prefixcolor="$2"; shift 2
+                    ;;
 
+                -m | --msg)
+                    msg="$2"; shift 2
+                    ;;
+            esac
+        done
+    fi
+
+    if [ $format ]; then format=''; else format='\n'; fi
+
+    if [ $log_file ]; then
+        case "$prefix" in
+            'ok' | 'OK' | 'DONE')
+                # ensure info log message written to log
+                std_logger "$msg" "INFO" "$log_file"
+                prefix="OK"
+                ;;
+
+            'INSTALLED')
+                std_logger "$msg" "INFO" "$log_file"
+                ;;
+
+            *)
+                std_logger "$msg" "$prefix" "$log_file"
+                ;;
+        esac
     fi
 
     [[ $QUIET ]] && return
     shift
     pref="----"
 
-    if [[ $1 ]]; then
+    if [[ $2 ]]; then
         pref="${1:0:5}"
         shift
     fi
 
-    # output
-    if [ $format ]; then
+    case "$prefix" in
+        'ok' | 'OK')
+                if [ $format ]; then
+                    echo -e "${yellow}[  $green${BOLD}$prefix${rst}${yellow}  ]${rst}  $msg" | indent04
+                else
+                    echo -e "\n${yellow}[  $green${BOLD}$prefix${rst}${yellow}  ]${rst}  $msg\n" | indent04
+                fi
+            ;;
 
-        echo -e "${yellow}[ $cyan$pref$yellow ]$reset  $msg" | indent04
-
-    elif [ "$prefix" = "OK" ] || [ "$prefix" = "ok" ]; then
-
-        echo -e "\n${yellow}[  $green${BOLD}$pref${rst}${yellow}  ]${rst}  $msg\n" | indent04
-
-    else
-
-        echo -e "\n${yellow}[ $cyan$pref$yellow ]${rst}  $msg\n" | indent04
-
-    fi
+        'INSTALLED')
+                if [ $format ]; then
+                    echo -e "${yellow}[ $green${BOLD}$prefix${rst}${yellow} ]${rst}  $msg" | indent04
+                else
+                    echo -e "\n${yellow}[ $green${BOLD}$prefix${rst}${yellow} ]${rst}  $msg\n" | indent04
+                fi
+            ;;
+        *)
+                if [ $format ]; then
+                    echo -e "${yellow}[ $cyan$prefix$yellow ]${rst}  $msg" | indent04
+                else
+                    echo -e "\n${yellow}[ $cyan$prefix$yellow ]${rst}  $msg\n" | indent04
+                fi
+            ;;
+    esac
+    return 0
     #
     # <<-- end function std_message -->>
 }
