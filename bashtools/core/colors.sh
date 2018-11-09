@@ -33,6 +33,7 @@ VERSION="2.0.1"
     cyan=$(tput setaf 6)
     white=$(tput setaf 7)
     gray=$(tput setaf 008)
+    magenta=$(tput setaf 13)
 
     # Formatting
     BOLD=`tput bold`
@@ -47,6 +48,7 @@ VERSION="2.0.1"
 
     # ansi color codes
     a_orange='\033[38;5;95;38;5;214m'
+    a_magenta='\033[38;5;95;38;5;177m'
     a_wgray='\033[38;5;95;38;5;250m'                  # white-gray
     a_lgray='\033[38;5;95;38;5;245m'                  # light gray
     a_dgray='\033[38;5;95;38;5;8m'                    # dark gray
