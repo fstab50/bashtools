@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.9.0"
+VERSION="2.9.1"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -712,38 +712,11 @@ function std_message(){
     local format="$4"
     local rst=${reset}
 
-    if [ "$(echo "$@" | grep '\-\-')" ]; then
-        while [ $# -gt 0 ]; do
-            case $1 in
-                -l | --log)
-                    log_file="$2"; shift 2
-                    ;;
+    if [ "$4" ]; then format=''; else format='\n'; fi
 
-                -f | --format)
-                    format="noblanklines"; shift 1
-                    ;;
-
-                -p | --prefix)
-                    prefix="$2"; shift 2
-                    ;;
-
-                -pc | --prefixcolor)
-                    prefixcolor="$2"; shift 2
-                    ;;
-
-                -m | --msg)
-                    msg="$2"; shift 2
-                    ;;
-            esac
-        done
-    fi
-
-    if [ $format ]; then format=''; else format='\n'; fi
-
-    if [ $log_file ]; then
+    if [ "$3" ]; then
         case "$prefix" in
             'ok' | 'OK' | 'DONE')
-                # ensure info log message written to log
                 std_logger "$msg" "INFO" "$log_file"
                 prefix="OK"
                 ;;
@@ -753,19 +726,13 @@ function std_message(){
                 ;;
 
             *)
+                # info log message written to log
                 std_logger "$msg" "$prefix" "$log_file"
                 ;;
         esac
     fi
 
-    [[ $QUIET ]] && return
-    shift
-    pref="----"
-
-    if [[ $2 ]]; then
-        pref="${1:0:5}"
-        shift
-    fi
+    if [[ $QUIET ]]; then return 0; fi
 
     case "$prefix" in
         'ok' | 'OK')
