@@ -721,7 +721,7 @@ function std_message(){
                 prefix="OK"
                 ;;
 
-            'INSTALLED')
+            'INSTALLED' | 'AVAILABLE' | 'NOT-FOUND')
                 filtered=$(echo $msg | sed 's/[|]//g')
                 std_logger "$filtered" "INFO" "$log_file"
                 ;;
@@ -743,6 +743,15 @@ function std_message(){
         'INSTALLED')
             echo -e "${format}$green${BOLD}$prefix${rst}  |  $msg${format}" | indent04
             ;;
+
+        'AVAILABLE')
+            echo -e "${format}$prefix${rst}  |  $msg${format}" | indent04
+            ;;
+
+        'NOT-FOUND')
+            echo -e "${format}${red}${BOLD}$prefix${rst}  |  $msg${format}" | indent04
+            ;;
+
         *)
             echo -e "${format}${yellow}[ $cyan$prefix$yellow ]${rst}  $msg${format}" | indent04
             ;;
