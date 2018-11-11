@@ -722,7 +722,8 @@ function std_message(){
                 ;;
 
             'INSTALLED')
-                std_logger "$msg" "INFO" "$log_file"
+                filtered=$(echo $msg | sed 's/[|]//g')
+                std_logger "$filtered" "INFO" "$log_file"
                 ;;
 
             *)
@@ -740,7 +741,7 @@ function std_message(){
             ;;
 
         'INSTALLED')
-            echo -e "${format}${yellow}[ $green${BOLD}$prefix${rst}${yellow} ]${rst}  $msg${format}" | indent04
+            echo -e "${format}$green${BOLD}$prefix${rst}  |  $msg${format}" | indent04
             ;;
         *)
             echo -e "${format}${yellow}[ $cyan$prefix$yellow ]${rst}  $msg${format}" | indent04
