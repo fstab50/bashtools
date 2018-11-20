@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.9.1"
+VERSION="2.9.2"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -535,6 +535,9 @@ function progress_dots(){
     ##
     ##      Exists when long-running-command completes
     ##
+    ##  Quiet Mode:
+    ##      if QUIET = true, runs timer, no stdout printing
+    ##
     ##  Dependencies:
     ##      - requires colors.sh (source of indent function)
     ##
@@ -578,7 +581,10 @@ function progress_dots(){
     titlestop=$(( $stop - $len ))           # stop column on text msg row
 
     # title
-    printf -- '\n\n%s' "$text" | indent04
+    if [[ ! $QUIET ]]; then
+        printf -- '\n\n%s' "$text" | indent04
+    fi
+
     # output progress dots
     while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
 
@@ -591,7 +597,7 @@ function progress_dots(){
             counter="0"
             stop=$stopmarker
 
-        else
+        elif [[ ! $QUIET ]]; then
             printf -- '%s' "."
         fi
 
