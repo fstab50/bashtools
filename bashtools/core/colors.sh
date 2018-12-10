@@ -155,9 +155,9 @@ VERSION="2.0.2"
 function print_local_variables(){
     # print out all variables contained in this module:
     VARS=$(set -o posix ; set)
-    SCRIPT_VARS="`grep -vFe "$VARS" <<<"$(set -o posix ; set)" | grep -v ^VARS=`"
-    unset VARS
+    SCRIPT_VARS=$(grep -vFe "$VARS" <<<"$(set -o posix ; set)" | grep -v ^VARS=)
     echo -e "$SCRIPT_VARS"
+    unset VARS
 }
 
 
@@ -198,7 +198,10 @@ EOM
     printf -- '\n'
     rm /tmp/.functions
 
-    print_local_variables
+    # show vars contained
+    set -o posix ; set | grep 'a_'
+    set -o posix ; set | grep 'pv_'
+    #print_local_variables
     #
     # <<-- end function pkg_info -->>
 }
