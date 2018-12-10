@@ -188,6 +188,9 @@ EOM
     done
     printf -- '\n'
     rm /tmp/.functions
+
+    # print out all variables contained in this module:
+    #  ( set -o posix ; set )
     #
     # <<-- end function pkg_info -->>
 }
