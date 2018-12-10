@@ -152,6 +152,15 @@ VERSION="2.0.2"
 # --- display about  -------------------------------------------------------------------------------
 
 
+function print_local_variables(){
+    # print out all variables contained in this module:
+    VARS=$(set -o posix ; set)
+    SCRIPT_VARS="`grep -vFe "$VARS" <<<"$(set -o posix ; set)" | grep -v ^VARS=`"
+    unset VARS
+    echo -e "$SCRIPT_VARS"
+}
+
+
 function pkg_info(){
     ##
     ##  displays information about this library module
@@ -189,8 +198,7 @@ EOM
     printf -- '\n'
     rm /tmp/.functions
 
-    # print out all variables contained in this module:
-    #  ( set -o posix ; set )
+    print_local_variables
     #
     # <<-- end function pkg_info -->>
 }
