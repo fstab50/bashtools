@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+pkg=$(basename $0 2>/dev/null)
+
 #------------------------------------------------------------------------------
 #
 #   colors.sh module | std colors for bash
@@ -17,8 +19,7 @@
 #
 #------------------------------------------------------------------------------
 
-
-VERSION="2.0.1"
+VERSION="2.0.2"
 
 
 # --- standard bash color codes  ------------------------------------------------------------------
@@ -146,3 +147,52 @@ VERSION="2.0.1"
     alias brightyellow2=$a_brightyellow2
     alias brightyellowgreen=$a_brightyellowgreen
     alias brightwhite=$a_brightwhite
+
+
+# --- display about  -------------------------------------------------------------------------------
+
+
+function pkg_info(){
+    ##
+    ##  displays information about this library module
+    ##
+    ##     - dependent module colors.sh is located always adjacent
+    ##     - sourcing of dep modules must occur after local var to avoid overwrite
+    ##       of variable values in this module
+    ##
+    local version="$1"
+    bd=$(echo -e ${bold})
+    act=$(echo -e ${a_orange})
+    rst=$(echo -e ${reset})
+
+    # generate list of functions
+    printf -- '%s\n' "$(declare -F | awk '{print $3}')" > /tmp/.functions
+    sum=$(cat /tmp/.functions | wc -l)
+
+    # construct, display help msg output
+    cat <<EOM
+    ___________________________________________________
+
+    ${title}colors.sh${rst}:  Bash Color Library
+
+    Module Name:        ${cyan}$pkg${rst}
+    Module Version:     ${act}$version${rst}
+    ___________________________________________________
+
+    Module Contains $sum Functions:
+
+EOM
+    # display list of function names in this module
+    for l in $(cat /tmp/.functions); do
+        printf -- '\t%s %s\n' "-" "$l"
+    done
+    printf -- '\n'
+    rm /tmp/.functions
+    #
+    # <<-- end function pkg_info -->>
+}
+
+    # print information about this package
+    if [ "$pkg" = "colors.sh" ]; then
+        pkg_info "$VERSION"
+    fi
