@@ -19,7 +19,7 @@ pkg=$(basename $0 2>/dev/null)
 #
 #------------------------------------------------------------------------------
 
-VERSION="2.0.2"
+VERSION="2.0.3"
 
 
 # --- standard bash color codes  ------------------------------------------------------------------
@@ -161,6 +161,17 @@ function print_local_variables(){
 }
 
 
+function print_colors(){
+    # print out all variables contained in this module:
+    declare -a array=("${!1}")
+    for i in "${array[@]}"; do
+        var="$(echo -e $i)"
+        printf -- '\t%s\n' $var
+    done
+    return 0
+}
+
+
 function pkg_info(){
     ##
     ##  displays information about this library module
@@ -170,9 +181,12 @@ function pkg_info(){
     ##       of variable values in this module
     ##
     local version="$1"
-    bd=$(echo -e ${bold})
+    bdwt=$(echo -e ${bold}${a_brightwhite})
     act=$(echo -e ${a_orange})
     rst=$(echo -e ${reset})
+
+    declare -a ansi_colors
+    declare -a printvalue_colors
 
     # generate list of functions
     printf -- '%s\n' "$(declare -F | awk '{print $3}')" > /tmp/.functions
@@ -199,9 +213,26 @@ EOM
     rm /tmp/.functions
 
     # show vars contained
-    set -o posix ; set | grep 'a_'
-    set -o posix ; set | grep 'pv_'
-    #print_local_variables
+    ansi_colors=$(set -o posix ; set | grep 'a_')
+    asum=$(set -o posix ; set | grep 'a_' | wc -l)
+
+    printvalue_colors=$(set -o posix ; set | grep 'pv_')
+    pvsum=$(set -o posix ; set | grep 'pv_' | wc -l)
+
+    #  display color vars
+    cat <<EOM
+    ___________________________________________________
+
+    ${rst}ANSI Codes:  $asum
+
+    $(print_colors ansi_colors[@])
+
+    ${rst}Print Value Codes:  $pvsum
+
+    $(print_colors printvalue_colors[@])
+    ${rst}
+
+EOM
     #
     # <<-- end function pkg_info -->>
 }
@@ -209,4 +240,5 @@ EOM
     # print information about this package
     if [ "$pkg" = "colors.sh" ]; then
         pkg_info "$VERSION"
+        exit 0
     fi
