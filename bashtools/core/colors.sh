@@ -164,9 +164,11 @@ function print_local_variables(){
 function print_colors(){
     # print out all variables contained in this module:
     declare -a array=("${!1}")
+    local rst=$(echo -e ${reset})
+
     for i in "${array[@]}"; do
-        var="$(echo -e $i)"
-        printf -- '\t%s\n' $var
+        var="$(echo -e ${i})"
+        printf -- '\t%s\n' $var 
     done
     return 0
 }
@@ -181,9 +183,9 @@ function pkg_info(){
     ##       of variable values in this module
     ##
     local version="$1"
-    bdwt=$(echo -e ${bold}${a_brightwhite})
-    act=$(echo -e ${a_orange})
-    rst=$(echo -e ${reset})
+    local bdwt=$(echo -e ${bold}${a_brightwhite})
+    local act=$(echo -e ${a_orange})
+    local rst=$(echo -e ${reset})
 
     declare -a ansi_colors
     declare -a printvalue_colors
