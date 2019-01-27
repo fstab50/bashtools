@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.9.3"
+VERSION="2.9.4"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -68,8 +68,9 @@ function authenticated(){
     ## validates authentication using iam user or role ##
     local profilename="$1"
     local response
+    local awscli=$(which aws)
     #
-    response=$(aws sts get-caller-identity --profile $profilename 2>&1)
+    response=$($awscli sts get-caller-identity --profile $profilename 2>&1)
     if [ "$(echo $response | grep Invalid)" ]; then
         std_message "The IAM profile provided ($profilename) failed to authenticate to AWS. Exit (Code $E_AUTH)" "AUTH"
         return 1
