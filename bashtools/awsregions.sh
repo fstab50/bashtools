@@ -12,7 +12,7 @@ reset=$(tput sgr0)
 bbc=$(echo -e ${bold}${a_brightcyan})
 bc=$(echo -e ${a_brightcyan})
 bbw=$(echo -e ${bold}${a_brightwhite})
-bbg=$(echo -e ${bold}${a_brightgreen})
+bbg=$(echo -e ${a_brightgreen})
 
 
 function get_regions(){
@@ -24,6 +24,8 @@ function get_regions(){
     local profilename="$1"
     local regioncode="$2"
     local tmp='/tmp'
+
+    if [ ! "$1" ]; then profilename='default'; fi
 
     declare -a arr_regions
 
@@ -100,7 +102,6 @@ function get_regions(){
 
         i=$(( i+1 ))
     done
-    echo "${bc}$region${reset} : $location"
     return 0
     #
     # << --- end function get_regions --->>
