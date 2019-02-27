@@ -67,6 +67,9 @@ function get_regions(){
             eu-west-2)
                 location="Europe (London, UK)"
                 ;;
+            eu-north-1)
+                location="Europe (Stockholm, Sweden)"
+                ;;
             eu-west-3)
                 location="Europe (Paris, France)"
                 ;;
