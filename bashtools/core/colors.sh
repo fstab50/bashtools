@@ -39,6 +39,8 @@ VERSION="2.0.4"
     # Formatting
     BOLD=`tput bold`
     UNBOLD=`tput sgr0`
+    a_italic='\x1b[3m'
+    ITALIC=$(echo -e ${a_italic})
 
     # std reset
     reset=$(tput sgr0)
