@@ -19,7 +19,7 @@ pkg=$(basename $0 2>/dev/null)
 #
 #------------------------------------------------------------------------------
 
-VERSION="2.0.3"
+VERSION="2.0.4"
 
 
 # --- standard bash color codes  ------------------------------------------------------------------
@@ -46,13 +46,13 @@ VERSION="2.0.3"
 
 # --- ansi color escape codes  --------------------------------------------------------------------
 
-
     # ansi color codes
     a_orange='\033[38;5;95;38;5;214m'
     a_magenta='\033[38;5;95;38;5;177m'
     a_wgray='\033[38;5;95;38;5;250m'                  # white-gray
     a_lgray='\033[38;5;95;38;5;245m'                  # light gray
     a_dgray='\033[38;5;95;38;5;8m'                    # dark gray
+    a_grayblue='\033[38;5;68;38;5;68m'
 
     # ansi bright colors
     a_brightblue='\033[38;5;51m'
@@ -168,7 +168,7 @@ function print_colors(){
 
     for i in "${array[@]}"; do
         var="$(echo -e ${i})"
-        printf -- '\t%s\n' $var 
+        printf -- '\t%s\n' $var
     done
     return 0
 }
