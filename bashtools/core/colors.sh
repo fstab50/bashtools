@@ -19,7 +19,7 @@ pkg=$(basename $0 2>/dev/null)
 #
 #------------------------------------------------------------------------------
 
-VERSION="2.0.4"
+VERSION="2.0.5"
 
 
 # --- standard bash color codes  ------------------------------------------------------------------
@@ -50,11 +50,13 @@ VERSION="2.0.4"
 
     # ansi color codes
     a_bluegray='\033[38;5;68;38;5;68m'
+    a_darkblue='\033[34;5;21m'
     a_dgray='\033[38;5;95;38;5;8m'                    # dark gray
     a_lgray='\033[38;5;95;38;5;245m'                  # light gray
     a_magenta='\033[38;5;95;38;5;177m'
     a_orange='\033[38;5;95;38;5;214m'
     a_wgray='\033[38;5;95;38;5;250m'                  # white-gray
+    a_wgray2='\033[38;5;7m;38;5;250m'                           # whitest-gray
 
     # ansi bright colors
     a_brightblue='\033[38;5;51m'
