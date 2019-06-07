@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.9.4"
+VERSION="2.9.5"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -753,6 +753,10 @@ function std_message(){
 
         'AVAILABLE')
             echo -e "${format}$prefix${rst}  |  $msg${format}" | indent04
+            ;;
+
+        'FAIL' | 'ERROR' | 'BAD' | 'N/A')
+            echo -e "${format}${yellow}[ ${red}${BOLD}$prefix${rst}${yellow} ]${rst}  $msg${format}" | indent04
             ;;
 
         'NOT-FOUND')
