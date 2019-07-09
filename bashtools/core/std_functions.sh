@@ -763,6 +763,10 @@ function std_message(){
             echo -e "${format}${red}${BOLD}$prefix${rst}  |  $msg${format}" | indent04
             ;;
 
+        'WARN')
+            echo -e "${format}${yellow}[ ${yellow}$prefix${rst}${yellow} ]${rst}  $msg${format}" | indent04
+            ;;
+
         *)
             echo -e "${format}${yellow}[ $cyan$prefix$yellow ]${rst}  $msg${format}" | indent04
             ;;

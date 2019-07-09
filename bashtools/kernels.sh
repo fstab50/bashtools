@@ -17,6 +17,8 @@ os_release=$(echo $OS_INFO | awk '{print $2}')
 source $pkg_path/core/std_functions.sh
 source $pkg_path/core/colors.sh
 
+REMOVE=""
+
 
 function root_permissions_bool(){
     ##
@@ -38,28 +40,39 @@ function list_deprecated_kernels(){
     ##
     ##  List all Kernels installed, but no longer in use
     ##
-    declare -a kernels
-    mapfile -t kernels < <($(dpkg --list 'linux-image*'| awk '{ if ($1=="ii") print $2}'|grep -v $(uname -r)))
-    echo "${kernels[@]}"
+
+    dpkg --list 'linux-image*'| awk '{ if ($1=="ii") print $2}'|grep -v $(uname -r)
+
     #
     # <-- end function -->
+}
+
+
+function select_kernel(){
+    local choice
+    declare -a kernels=("${!1}")
+    std_message "Select a kernel for removal" "INFO"
+    read -p "Enter number [quit]: " choice
+    std_message "Kernel package ${red}${kernels[$choice]}${reset} selected for removal." "OK"
+    OPTION="$choice"
 }
 
 
 function uninstall_kernel(){
     declare -a kernels=("${!1}")
     local option="$2"
+    local choice
 
     kernel="${kernels[$option]}"
 
-    std_message "You are about to uninstall $kernel" "WARN"
+    std_message "You are about to uninstall ${red}$kernel${reset}" "WARN"
     read -p "Confirm? [yes]: " choice
 
     if [ ! $choice ]; then
         apt-get purge $kernel
         return 0
     else
-        std_message "Kernel $kernel left installed"
+        std_message "Kernel ${red}$kernel${reset} left installed" "INFO"
         return 1
     fi
 }
@@ -81,17 +94,20 @@ function finishing_actions(){
 if root_permissions_bool; then
 
     declare -a arr_kernels
-    mapfile -t arr_kernels < <(list_deprecated_kernels)
+    for k in $(list_deprecated_kernels); do
+        arr_kernels=( "${arr_kernels[@]}" "$k" )
+    done
     std_message "Installed Kernels No longer in use:" "INFO"
     i=0
     for k in "${arr_kernels[@]}"; do
-        printf -- '(%s):\t%s\n' "$i" "$k"
+        printf -- '\t(%s):  %s\n' "$i" "$k"
         i=$(( $i + 1 ))
     done
+    printf -- '\n'
 
-    #select_kernel
-    exit 0
-    if uninstall_kernel; then
+    select_kernel arr_kernels[@]
+
+    if uninstall_kernel arr_kernels[@] $OPTION; then
         finishing_actions
     fi
 
