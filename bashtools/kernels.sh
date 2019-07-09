@@ -69,7 +69,7 @@ function uninstall_kernel(){
     read -p "Confirm? [quit]: " choice
 
     if [ ! $choice ] || [ "$choice" = "quit" ]; then
-        std_message "Kernel ${red}$kernel${reset} left installed" "INFO"
+        std_message "Kernel ${red}$kernel${reset} will remain installed" "INFO"
         return 1
     else
         apt-get purge $kernel
