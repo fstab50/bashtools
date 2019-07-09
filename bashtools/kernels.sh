@@ -91,7 +91,7 @@ function finishing_actions(){
 # -- main -----------------------------------------------------------------------------------------
 
 
-if root_permissions_bool; then
+if root_permissions_bool && { [ "$os_family" = "Ubuntu" ] || [ "$os_family" = "Mint" ]; }; then
 
     declare -a arr_kernels
     for k in $(list_deprecated_kernels); do
