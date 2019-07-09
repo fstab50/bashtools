@@ -66,14 +66,14 @@ function uninstall_kernel(){
     kernel="${kernels[$option]}"
 
     std_message "You are about to uninstall ${red}$kernel${reset}" "WARN"
-    read -p "Confirm? [yes]: " choice
+    read -p "Confirm? [quit]: " choice
 
-    if [ ! $choice ]; then
-        apt-get purge $kernel
-        return 0
-    else
+    if [ ! $choice ] || [ "$choice" = "quit" ]; then
         std_message "Kernel ${red}$kernel${reset} left installed" "INFO"
         return 1
+    else
+        apt-get purge $kernel
+        return 0
     fi
 }
 
