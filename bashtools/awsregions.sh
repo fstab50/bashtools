@@ -98,7 +98,7 @@ function get_regions(){
                 ;;
         esac
 
-        if [ ! $regioncode ]; then printf -- '%s\t%s\n' "${bc}$region${reset}" "${bbg}$location${reset}"; fi
+        if [ ! $regioncode ]; then printf -- '%s\t%s\n' "$region" "$location"; fi
 
         i=$(( i+1 ))
     done
