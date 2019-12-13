@@ -52,7 +52,7 @@ function select_kernel(){
     local choice='quit'
 
     declare -a kernels=("${!1}")
-    std_message "Select a kernel for removal" "INFO"
+    std_message "Select a kernel for removal:" "INFO"
     read -p "    Enter number [quit]: " choice
 
     if [ -z $choice ] || [ "$choice" = "q" ] || [ "$choice" = "quit" ]; then
