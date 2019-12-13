@@ -39,7 +39,7 @@ function get_regions(){
     else
         # collect list of all current AWS Regions globally:
         aws ec2 describe-regions --profile $profilename --output json > $tmp/.regions.json
-        arr_regions=( "$(jq -r .Regions[].RegionName $tmp/.regions.json)" )
+        arr_regions=( "$(jq -r .Regions[].RegionName $tmp/.regions.json | sort)" )
     fi
 
     for region in ${arr_regions[@]}; do
