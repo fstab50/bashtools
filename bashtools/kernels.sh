@@ -49,12 +49,19 @@ function list_deprecated_kernels(){
 
 
 function select_kernel(){
-    local choice
+    local choice='quit'
+
     declare -a kernels=("${!1}")
     std_message "Select a kernel for removal" "INFO"
-    read -p "Enter number [quit]: " choice
-    std_message "Kernel package ${red}${kernels[$choice]}${reset} selected for removal." "OK"
-    OPTION="$choice"
+    read -p "    Enter number [quit]: " choice
+
+    if [ -z $choice ] || [ "$choice" = "q" ] || [ "$choice" = "quit" ]; then
+        std_message "No Kernel package selected for removal. Exit" "INFO"
+        exit 0
+    else
+        std_message "Kernel package ${red}${kernels[$choice]}${reset} selected for removal." "OK"
+        OPTION="$choice"
+    fi
 }
 
 
@@ -94,10 +101,13 @@ function finishing_actions(){
 if root_permissions_bool && { [ "$os_family" = "Ubuntu" ] || [ "$os_family" = "Mint" ]; }; then
 
     declare -a arr_kernels
+
     for k in $(list_deprecated_kernels); do
         arr_kernels=( "${arr_kernels[@]}" "$k" )
     done
+
     std_message "Installed Kernels No longer in use:" "INFO"
+
     i=0
     for k in "${arr_kernels[@]}"; do
         printf -- '\t(%s):  %s\n' "$i" "$k"
