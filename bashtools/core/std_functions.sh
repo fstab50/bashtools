@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-VERSION="2.9.6"
+LIB_VERSION="2.9.7"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\npkg and pkg_path errors - both are null"
@@ -413,7 +413,7 @@ function pkg_info(){
     ##     - sourcing of dep modules must occur after local var to avoid overwrite
     ##       of variable values in this module
     ##
-    local version=$VERSION
+    local version=$LIB_VERSION
     source $pkg_path/colors.sh
     bd=$(echo -e ${bold})
     act=$(echo -e ${a_orange})
@@ -671,10 +671,10 @@ function std_logger(){
         source "$pkg_lib/version.py"
         version=$__version__
 
-    elif [ "$VERSION" ]; then
-        version=$VERSION
+    elif [ "$LIB_VERSION" ]; then
+        version=$LIB_VERSION
 
-    elif [ ! "$VERSION" ]; then
+    elif [ ! "$LIB_VERSION" ]; then
         version="1.0.NA"
 
     fi
