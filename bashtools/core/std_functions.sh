@@ -24,11 +24,10 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-LIB_VERSION="2.9.7"
+LIB_VERSION="2.9.8"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
-    echo -e "\npkg and pkg_path errors - both are null"
-    exit
+    echo -e "\n[std_functions.sh]: pkg and pkg_path errors - both are null"
 fi
 
 
