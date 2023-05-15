@@ -30,7 +30,7 @@ function get_regions(){
     declare -a arr_regions
 
     if [ -z "$(type jq 2>/dev/null)" ] || [ -z "$(type aws 2>/dev/null)" ]; then
-        printf -- 'DependencyFail\n'
+        printf -- 'DependencyFail.  Both jq and the awscli are required.\n'
         return 1
 
     elif [ $regioncode ]; then
@@ -40,6 +40,11 @@ function get_regions(){
         # collect list of all current AWS Regions globally:
         aws ec2 describe-regions --profile $profilename --output json > $tmp/.regions.json
         arr_regions=( "$(jq -r .Regions[].RegionName $tmp/.regions.json | sort)" )
+
+        ## DEBUG ##
+        #printf -- 'Array arr_regions contents:\n'
+        #echo "${arr_regions[*]}"
+        #echo "----------------------------------------"
     fi
 
     for region in "${arr_regions[@]}"; do
@@ -50,9 +55,6 @@ function get_regions(){
     	        ;;
     		ap-northeast-2)
     	        location="Asia Pacific (Seoul, Korea)"
-                ;;
-             ap-northeast-3)
-                 location="Asia Pacific (Osaka, Japan)"
                 ;;
     	    ap-south-1)
     	        location="Asia Pacific (Mumbai, India)"
@@ -102,6 +104,7 @@ function get_regions(){
             *)
                 location="New Region"
                 ;;
+
         esac
 
         if [ ! $regioncode ]; then printf -- '%s\t%s\n' "$region" "$location"; fi
