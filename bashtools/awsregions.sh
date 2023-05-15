@@ -42,7 +42,7 @@ function get_regions(){
         arr_regions=( "$(jq -r .Regions[].RegionName $tmp/.regions.json | sort)" )
     fi
 
-    for region in ${arr_regions[@]}; do
+    for region in "${arr_regions[@]}"; do
         # set region location description
         case "$region" in
             ap-northeast-1)
@@ -80,6 +80,9 @@ function get_regions(){
                 ;;
             eu-central-1)
                 location="Europe (Frankfurt, Germany)"
+                ;;
+            eu-central-2)
+                location="Europe (Zurich, Switzerland)"
                 ;;
             sa-east-1)
                 location="South America (Sao Paulo, Brazil)"
