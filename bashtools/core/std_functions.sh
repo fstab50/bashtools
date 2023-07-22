@@ -24,7 +24,7 @@ host=$(hostname)
 system=$(uname)
 
 # this file
-LIB_VERSION="2.9.8"
+LIB_VERSION="2.10.0"
 
 if [ ! $pkg ] || [ ! $pkg_path ]; then
     echo -e "\n[std_functions.sh]: pkg and pkg_path errors - both are null"
@@ -57,7 +57,7 @@ function array2json(){
         fi
         ct=$(( $ct + 1 ))
     done
-    echo -e "}" >> $output_file
+    echo -e "}" >> "$output_file"
     #
     # <-- end function array2json -->
 }
@@ -743,31 +743,31 @@ function std_message(){
 
     case "$prefix" in
         'ok' | 'OK')
-            echo -e "${format}${yellow}[  $green${BOLD}$prefix${rst}${yellow}  ]${rst}  $msg${format}" | indent04
+            echo -e "${format}${yellow}[  ${green}${BOLD}${prefix^^}${rst}${yellow}  ]${rst}  $msg${format}" | indent04
             ;;
 
-        'INSTALLED')
-            echo -e "${format}$green${BOLD}$prefix${rst}  |  $msg${format}" | indent04
+        'INSTALLED' | 'installed')
+            echo -e "${format}$green${BOLD}${prefix^^}${rst}  |  $msg${format}" | indent04
             ;;
 
         'AVAILABLE')
-            echo -e "${format}$prefix${rst}  |  $msg${format}" | indent04
+            echo -e "${format}${prefix^^}${rst}  |  $msg${format}" | indent04
             ;;
 
-        'FAIL' | 'ERROR' | 'BAD' | 'N/A')
-            echo -e "${format}${yellow}[ ${red}${BOLD}$prefix${rst}${yellow} ]${rst}  $msg${format}" | indent04
+        'FAIL' | 'fail' | 'ERROR' | 'error' | 'BAD' | 'bad' | 'N/A')
+            echo -e "${format}${yellow}[ ${red}${BOLD}${prefix^^}${rst}${yellow} ]${rst}  $msg${format}" | indent04
             ;;
 
         'NOT-FOUND')
-            echo -e "${format}${red}${BOLD}$prefix${rst}  |  $msg${format}" | indent04
+            echo -e "${format}${red}${BOLD}${prefix^^}${rst}  |  $msg${format}" | indent04
             ;;
 
-        'WARN')
-            echo -e "${format}${yellow}[ ${yellow}$prefix${rst}${yellow} ]${rst}  $msg${format}" | indent04
+        'WARN' | 'warn' | 'Warn')
+            echo -e "${format}${yellow}[ ${BOLD}${yellow}${prefix^^}${rst}${yellow} ]${rst}  $msg${format}" | indent04
             ;;
 
         *)
-            echo -e "${format}${yellow}[ $cyan$prefix$yellow ]${rst}  $msg${format}" | indent04
+            echo -e "${format}${yellow}[ $cyan${prefix^^}$yellow ]${rst}  $msg${format}" | indent04
             ;;
     esac
     return 0
