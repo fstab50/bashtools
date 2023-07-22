@@ -750,7 +750,7 @@ function std_message(){
             echo -e "${format}$green${BOLD}${prefix^^}${rst}  |  $msg${format}" | indent04
             ;;
 
-        'AVAILABLE')
+        'AVAILABLE' | 'available')
             echo -e "${format}${prefix^^}${rst}  |  $msg${format}" | indent04
             ;;
 
