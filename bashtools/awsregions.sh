@@ -51,6 +51,9 @@ function get_regions(){
     		ap-northeast-2)
     	        location="Asia Pacific (Seoul, Korea)"
                 ;;
+             ap-northeast-3)
+                 location="Asia Pacific (Osaka, Japan)"
+                ;;
     	    ap-south-1)
     	        location="Asia Pacific (Mumbai, India)"
     	        ;;
