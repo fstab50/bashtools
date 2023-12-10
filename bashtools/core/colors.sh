@@ -19,7 +19,7 @@ pkg=$(basename $0 2>/dev/null)
 #
 #------------------------------------------------------------------------------
 
-VERSION="2.0.6"
+VERSION="2.0.7"
 
 
 # --- standard bash color codes  ------------------------------------------------------------------
@@ -221,10 +221,10 @@ EOM
 
     # show vars contained
     ansi_colors=$(set -o posix ; set | grep 'a_')
-    asum=$(set -o posix ; set | grep 'a_' | wc -l)
+    asum=$(set -o posix ; set | grep -c 'a_')
 
     printvalue_colors=$(set -o posix ; set | grep 'pv_')
-    pvsum=$(set -o posix ; set | grep 'pv_' | wc -l)
+    pvsum=$(set -o posix ; set | grep -c 'pv_')
 
     #  display color vars
     cat <<EOM
